@@ -287,10 +287,23 @@ func on_player_take_discard() -> void:
         if audio and audio.has_method("play_card_slide"):
             audio.play_card_slide()
         refresh_all_ui()
-
 func on_player_meld_selected() -> void:
     if not is_player_turn or current_phase != Phase.PLAY or match_over or is_animating: return
     if selected_cards.is_empty(): return
+
+    # REGOLA F.I.BUR: Dopo aver preso il pozzetto non puoi calare tutte le carte a zero
+    if player_has_pozzetto and selected_cards.size() >= player_hand.size():
+        var has_b = false
+        for m in player_melds:
+            if m.cards.size() >= 7:
+                has_b = true
+                break
+        if not has_b:
+            set_banner("⚠️ REGOLA F.I.BUR: Non puoi restare senza carte senza aver prima realizzato almeno un BURRACO (7+ carte)!")
+            return
+        else:
+            set_banner("⚠️ REGOLA F.I.BUR: La chiusura deve avvenire con uno scarto! Tieni almeno 1 carta in mano.")
+            return
 
     # 1. Se ci sono calate esistenti, verifica se le carte selezionate possono attaccarsi
     var target_meld: BurracoRules.BurracoMeld = null
@@ -563,6 +576,20 @@ func on_player_discard_selected() -> void:
         return
 
     var card = selected_cards[0]
+
+    # REGOLA UFFICIALE F.I.BUR:
+    # Se il giocatore ha già preso il Pozzetto ed è rimasto con 1 sola carta in mano,
+    # NON PUÒ scartare l'ultima carta (andando a 0) se non ha completato almeno un BURRACO (7+ carte)!
+    if player_has_pozzetto and player_hand.size() == 1:
+        var has_burraco = false
+        for m in player_melds:
+            if m.cards.size() >= 7:
+                has_burraco = true
+                break
+        if not has_burraco:
+            set_banner("⚠️ REGOLA F.I.BUR: Non puoi scartare l'ultima carta né chiudere senza aver realizzato almeno un BURRACO (7+ carte)!")
+            return
+
     player_hand.erase(card)
     deck.discard(card)
     selected_cards.clear()
