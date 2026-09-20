@@ -115,16 +115,16 @@ func _build_main_menu() -> void:
     center_container.set_anchors_preset(Control.PRESET_FULL_RECT)
     main_menu_layer.add_child(center_container)
 
-    # 4. Main Content Vertical Box
+    # 4. Main Content Vertical Box (Portrait 720 x 1280)
     var main_vbox = VBoxContainer.new()
     main_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-    main_vbox.custom_minimum_size = Vector2(1170, 0)
-    main_vbox.add_theme_constant_override("separation", 12)
+    main_vbox.custom_minimum_size = Vector2(650, 0)
+    main_vbox.add_theme_constant_override("separation", 20)
     center_container.add_child(main_vbox)
 
-    # 5. Top 3D Pixar/Clash Logo (Clean, centered, floating)
+    # 5. Top 3D Pixar/Clash Logo (Clean, centered, floating, majestic in portrait)
     menu_logo = TextureRect.new()
-    menu_logo.custom_minimum_size = Vector2(460, 115)
+    menu_logo.custom_minimum_size = Vector2(580, 180)
     menu_logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     menu_logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     menu_logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -133,15 +133,13 @@ func _build_main_menu() -> void:
         menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_aaa.png")
     main_vbox.add_child(menu_logo)
 
-    # 6. 2x2 GRAND GRID OF HUGE BUTTONS (Distanziati per occupare tutto lo schermo!)
-    var grid = GridContainer.new()
-    grid.columns = 2
-    grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    grid.add_theme_constant_override("h_separation", 28)
-    grid.add_theme_constant_override("v_separation", 16)
-    main_vbox.add_child(grid)
+    # 6. 4 GRANDI BOTTONI VERTICALI (Larghi 640px, Alti 135px, distanziati per riempire lo schermo)
+    var btn_box = VBoxContainer.new()
+    btn_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    btn_box.add_theme_constant_override("separation", 18)
+    main_vbox.add_child(btn_box)
 
-    # BUTTON 1: STORIA (Top-Left)
+    # BUTTON 1: STORIA
     var btn_story = _create_huge_card_button(
         "⚔️",
         "STORIA",
@@ -151,9 +149,9 @@ func _build_main_menu() -> void:
         Color(0.92, 0.78, 0.35, 1.0)
     )
     btn_story.pressed.connect(_on_btn_story_pressed)
-    grid.add_child(btn_story)
+    btn_box.add_child(btn_story)
 
-    # BUTTON 2: BURRACO VELOCE (Top-Right - PRIMARY HERO BUTTON)
+    # BUTTON 2: BURRACO VELOCE (PRIMARY HERO BUTTON - CLASH STYLE GOLD)
     quick_play_btn = _create_huge_card_button(
         "🃏",
         "BURRACO VELOCE",
@@ -164,9 +162,9 @@ func _build_main_menu() -> void:
         true
     )
     quick_play_btn.pressed.connect(_start_quick_game)
-    grid.add_child(quick_play_btn)
+    btn_box.add_child(quick_play_btn)
 
-    # BUTTON 3: ONLINE (Bottom-Left)
+    # BUTTON 3: ONLINE
     var btn_online = _create_huge_card_button(
         "🌐",
         "ONLINE",
@@ -176,9 +174,9 @@ func _build_main_menu() -> void:
         Color(0.42, 0.95, 0.68, 1.0)
     )
     btn_online.pressed.connect(_on_btn_online_pressed)
-    grid.add_child(btn_online)
+    btn_box.add_child(btn_online)
 
-    # BUTTON 4: REGOLE (Bottom-Right)
+    # BUTTON 4: REGOLE
     var btn_rules = _create_huge_card_button(
         "📜",
         "REGOLE",
@@ -188,7 +186,7 @@ func _build_main_menu() -> void:
         Color(1.0, 0.76, 0.45, 1.0)
     )
     btn_rules.pressed.connect(_show_rules_modal)
-    grid.add_child(btn_rules)
+    btn_box.add_child(btn_rules)
 
     # 7. Subdued Golden Footer
     var footer = Label.new()
@@ -201,7 +199,7 @@ func _build_main_menu() -> void:
 func _create_huge_card_button(icon_emoji: String, title: String, subtitle: String, tag: String, bg_col: Color, border_col: Color, is_primary: bool = false) -> Button:
     var btn = Button.new()
     # MASSIVE SIZE: 570px wide x 190px tall (more than 2.5x larger than before!)
-    btn.custom_minimum_size = Vector2(570, 190)
+    btn.custom_minimum_size = Vector2(640, 136)
     btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
     # 3D Clash Royale style bevel with heavy shadow and thick shiny border
@@ -360,7 +358,7 @@ func _build_rules_modal() -> void:
     rules_modal.add_child(center_c)
 
     var panel = Panel.new()
-    panel.custom_minimum_size = Vector2(980, 580)
+    panel.custom_minimum_size = Vector2(680, 920)
     var psb = StyleBoxFlat.new()
     psb.bg_color = Color(0.06, 0.09, 0.12, 0.98)
     psb.border_color = Color(0.96, 0.82, 0.25, 1.0)
@@ -396,7 +394,7 @@ func _build_rules_modal() -> void:
 
     var cards_box = HBoxContainer.new()
     cards_box.position = Vector2(25, 70)
-    cards_box.size = Vector2(930, 485)
+    cards_box.size = Vector2(640, 800)
     cards_box.add_theme_constant_override("separation", 15)
     panel.add_child(cards_box)
 
@@ -600,6 +598,12 @@ func _check_cli_args() -> void:
                     for r in [CardData.Rank.FOUR, CardData.Rank.FIVE, CardData.Rank.SIX, CardData.Rank.SEVEN, CardData.Rank.EIGHT, CardData.Rank.NINE]:
                         m3.cards.append(CardData.create_card(300 + r, CardData.Suit.HEARTS, r))
                     mgr.opponent_melds.append(m3)
+
+                    # Sample cards in discard pile for testing swipeable strip
+                    mgr.deck.discard_pile.append(CardData.create_card(205, CardData.Suit.DIAMONDS, CardData.Rank.FIVE))
+                    mgr.deck.discard_pile.append(CardData.create_card(206, CardData.Suit.DIAMONDS, CardData.Rank.SIX))
+                    mgr.deck.discard_pile.append(CardData.create_card(108, CardData.Suit.SPADES, CardData.Rank.EIGHT))
+                    mgr.deck.discard_pile.append(CardData.create_card(402, CardData.Suit.CLUBS, CardData.Rank.TWO, 0, false))
 
                     mgr.refresh_all_ui()
             )

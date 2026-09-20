@@ -33,10 +33,12 @@ var selected_cards: Array[BurracoCardData] = []
 @onready var opp_melds_container: HBoxContainer = $"../UI/TableLayer/OpponentMelds"
 @onready var status_label: Label = $"../UI/TableLayer/StatusLabel"
 @onready var opp_count_label: Label = $"../UI/TableLayer/OppCountLabel"
-@onready var discard_top_view: Control = $"../UI/TableLayer/CenterArea/DiscardTop"
+@onready var discard_top_view: Control = get_node_or_null("../UI/TableLayer/CenterArea/DiscardTop")
 @onready var stock_btn: BaseButton = $"../UI/TableLayer/CenterArea/StockButton"
-@onready var discard_btn_action: BaseButton = $"../UI/TableLayer/CenterArea/TakeDiscardButton"
+@onready var discard_btn_action: BaseButton = get_node_or_null("../UI/TableLayer/CenterArea/TakeDiscardButton")
 @onready var discard_label_btn: BaseButton = $"../UI/TableLayer/CenterArea/TakeDiscardLabelBtn"
+@onready var discard_scroll: ScrollContainer = get_node_or_null("../UI/TableLayer/CenterArea/DiscardScroll")
+@onready var discard_cards_box: HBoxContainer = get_node_or_null("../UI/TableLayer/CenterArea/DiscardScroll/DiscardCardsBox")
 @onready var meld_btn: Button = $"../UI/TableLayer/Actions/MeldBtn"
 @onready var discard_hand_btn: Button = $"../UI/TableLayer/Actions/DiscardBtn"
 @onready var sort_suit_btn: Button = $"../UI/TableLayer/Actions/SortSuitBtn"
@@ -44,16 +46,14 @@ var selected_cards: Array[BurracoCardData] = []
 @onready var modal_end: Panel = $"../UI/ModalEndMatch"
 @onready var result_label: Label = $"../UI/ModalEndMatch/ResultLabel"
 @onready var score_label: Label = $"../UI/ModalEndMatch/ScoreLabel"
-@onready var mode_btn: Button = $"../UI/HeaderBar/ModeToggleBtn"
+@onready var mode_btn: Button = get_node_or_null("../UI/HeaderBar/ModeToggleBtn")
 
 var ai: BurracoAI = BurracoAI.new()
 var card_view_script = preload("res://scripts/card_view.gd")
 
 func _ready() -> void:
     if stock_btn: stock_btn.pressed.connect(on_player_draw_stock)
-    if discard_btn_action: discard_btn_action.pressed.connect(open_discard_inspector)
-    if discard_label_btn: discard_label_btn.pressed.connect(open_discard_inspector)
-    _build_discard_inspector()
+    if discard_label_btn: discard_label_btn.pressed.connect(on_player_take_discard)
     if meld_btn: meld_btn.pressed.connect(on_player_meld_selected)
     if discard_hand_btn: discard_hand_btn.pressed.connect(on_player_discard_selected)
     if sort_suit_btn: sort_suit_btn.pressed.connect(sort_by_suit)
@@ -758,23 +758,39 @@ func refresh_all_ui() -> void:
     if opp_count_label:
         opp_count_label.text = "Mano Avversario: %d carte" % opponent_hand.size()
 
-    # Bottoni
+    # Bottoni & Tallone
     if stock_btn: stock_btn.disabled = not (is_player_turn and current_phase == Phase.DRAW)
     var has_discards = deck.discard_pile.size() > 0
-    if discard_btn_action: discard_btn_action.disabled = not has_discards
+    var can_take_discard = is_player_turn and current_phase == Phase.DRAW and has_discards and not (current_mode == GameMode.WILD and discard_frozen_turns > 0)
     if discard_label_btn:
-        discard_label_btn.disabled = not has_discards
-        discard_label_btn.text = "👁️ SCARTI (%d)" % deck.discard_pile.size()
+        discard_label_btn.disabled = not can_take_discard
+        if has_discards:
+            discard_label_btn.text = "📥 RACCOGLI MONTE (%d)" % deck.discard_pile.size()
+        else:
+            discard_label_btn.text = "MONTE VUOTO"
     _update_action_buttons()
 
-    # Aggiorna top scarti
-    if discard_top_view and discard_top_view.has_method("setup"):
-        var top = deck.peek_top_discard()
-        if top:
-            discard_top_view.visible = true
-            discard_top_view.setup(top)
-        else:
-            discard_top_view.visible = false
+    # Aggiorna striscia Monte Scarti a scorrimento tattile (visibile direttamente sul tavolo!)
+    if discard_cards_box:
+        for c in discard_cards_box.get_children():
+            c.queue_free()
+        var pile_size = deck.discard_pile.size()
+        for idx in range(pile_size):
+            var card = deck.discard_pile[idx]
+            var cv = CardView.new()
+            discard_cards_box.add_child(cv)
+            cv.setup(card)
+            # Tocco diretto sul monte scarti per raccoglierlo durante la fase di pesca
+            cv.card_clicked.connect(func(_clicked_view):
+                if is_player_turn and current_phase == Phase.DRAW:
+                    on_player_take_discard()
+            )
+        # Scorrimento automatico verso l'ultimo scarto
+        if discard_scroll and pile_size > 0:
+            get_tree().create_timer(0.05).timeout.connect(func():
+                if discard_scroll:
+                    discard_scroll.scroll_horizontal = 99999
+            )
 
     # Ricrea carte in mano (Balatro style)
     _rebuild_hand_views()
