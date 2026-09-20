@@ -21,6 +21,8 @@ static func get_tex(res_path: String) -> Texture2D:
             var buffer = fa.get_buffer(fa.get_length())
             var img = Image.new()
             var err = img.load_png_from_buffer(buffer)
+            if err != OK:
+                err = img.load_jpg_from_buffer(buffer)
             if err == OK:
                 var tex = ImageTexture.create_from_image(img)
                 _cache[res_path] = tex

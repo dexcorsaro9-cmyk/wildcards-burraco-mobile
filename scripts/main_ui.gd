@@ -76,14 +76,16 @@ func _ready() -> void:
 func _process(delta: float) -> void:
     menu_anim_time += delta
     
-    # 1. Floating animation for Menu Logo
+    # 1. Subtle breathing animation for Menu Logo (preserves container layout)
     if menu_logo != null and main_menu_layer != null and main_menu_layer.visible:
-        menu_logo.position.y = 12.0 + sin(menu_anim_time * 2.2) * 5.0
+        var s = 1.0 + sin(menu_anim_time * 2.4) * 0.02
+        menu_logo.scale = Vector2(s, s)
+        menu_logo.pivot_offset = menu_logo.size / 2.0
 
-    # 2. Pulsing glow for Quick Play button
+    # 2. Pulsing golden glow for Burraco Veloce button
     if quick_play_btn != null and main_menu_layer != null and main_menu_layer.visible:
-        var pulse = (sin(menu_anim_time * 4.0) + 1.0) * 0.5
-        var border_col = Color(0.96, 0.78 + pulse * 0.18, 0.22 + pulse * 0.25, 1.0)
+        var pulse = (sin(menu_anim_time * 4.5) + 1.0) * 0.5
+        var border_col = Color(1.0, 0.82 + pulse * 0.18, 0.20 + pulse * 0.35, 1.0)
         var sb = quick_play_btn.get_theme_stylebox("normal")
         if sb is StyleBoxFlat:
             sb.border_color = border_col
@@ -92,7 +94,6 @@ func _process(delta: float) -> void:
     if splash_prompt != null and splash_layer != null and splash_layer.visible:
         var alpha = 0.45 + (sin(menu_anim_time * 4.5) + 1.0) * 0.275
         splash_prompt.modulate.a = alpha
-
 # ==============================================================================
 # 1. SPLASH SCREEN
 # ==============================================================================
@@ -178,7 +179,7 @@ func _exit_splash_to_menu() -> void:
     )
 
 # ==============================================================================
-# 2. MAIN MENU (4 BUTTONS: STORIA, PARTITA RAPIDA, ONLINE, REGOLE)
+# 2. MAIN MENU (MEDIEVAL TAVERN PIXAR/CLASH + 4 GRANDI BOTTONI)
 # ==============================================================================
 func _build_main_menu() -> void:
     main_menu_layer = Control.new()
@@ -187,93 +188,133 @@ func _build_main_menu() -> void:
     main_menu_layer.z_index = 35
     add_child(main_menu_layer)
 
-    # Dark translucent felt overlay
-    var overlay = ColorRect.new()
-    overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
-    overlay.color = Color(0.03, 0.07, 0.05, 0.88)
-    main_menu_layer.add_child(overlay)
+    # 1. Medieval Tavern Background (Pixar & Clash Royale 3D Style)
+    var bg_img = TextureRect.new()
+    bg_img.name = "MedievalBackground"
+    bg_img.set_anchors_preset(Control.PRESET_FULL_RECT)
+    bg_img.texture = AssetLoader.get_tex("res://assets/menu_bg_medieval.png")
+    if bg_img.texture == null:
+        bg_img.texture = AssetLoader.get_tex("res://assets/menu_bg_medieval.jpg")
+    bg_img.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    bg_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+    main_menu_layer.add_child(bg_img)
 
-    # Top Emblem / Logo Badge
+    # 2. Vignette / Warm Dark Scrim for High UI Contrast
+    var scrim = ColorRect.new()
+    scrim.set_anchors_preset(Control.PRESET_FULL_RECT)
+    scrim.color = Color(0.02, 0.01, 0.01, 0.18)
+    main_menu_layer.add_child(scrim)
+
+    # 3. Responsive Center Container (Guarantees PERFECT Centering on ALL Devices)
+    var center_container = CenterContainer.new()
+    center_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+    main_menu_layer.add_child(center_container)
+
+    # 4. Vertical Stack for Logo + 4 Grandi Bottoni + Footer
+    var main_vbox = VBoxContainer.new()
+    main_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+    main_vbox.custom_minimum_size = Vector2(580, 0)
+    main_vbox.add_theme_constant_override("separation", 10)
+    center_container.add_child(main_vbox)
+
+    # 5. Top 3D Pixar/Clash Logo (Transparent background, perfectly sized)
     menu_logo = TextureRect.new()
-    menu_logo.set_anchors_preset(Control.PRESET_TOP_WIDE)
-    menu_logo.custom_minimum_size = Vector2(620, 260)
-    menu_logo.size = Vector2(620, 260)
-    menu_logo.position = Vector2((1280 - 620) / 2.0, 15.0)
+    menu_logo.custom_minimum_size = Vector2(520, 155)
+    menu_logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     menu_logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     menu_logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_badge.png")
+    menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_aaa.png")
     if menu_logo.texture == null:
-        menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_aaa.png")
-    main_menu_layer.add_child(menu_logo)
+        menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_badge.png")
+    main_vbox.add_child(menu_logo)
 
-    # Center Buttons Container
+    # 6. Container for the 4 GRANDI BOTTONI
     var btn_box = VBoxContainer.new()
-    btn_box.set_anchors_preset(Control.PRESET_CENTER)
-    btn_box.custom_minimum_size = Vector2(400, 310)
-    btn_box.size = Vector2(400, 310)
-    btn_box.position = Vector2((1280 - 400) / 2.0, 275.0)
-    btn_box.add_theme_constant_override("separation", 11)
-    main_menu_layer.add_child(btn_box)
+    btn_box.alignment = BoxContainer.ALIGNMENT_CENTER
+    btn_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    btn_box.add_theme_constant_override("separation", 10)
+    main_vbox.add_child(btn_box)
 
     # 1. STORIA
-    var btn_story = _create_menu_button("⚔️  STORIA", "Campagna Roguelike & Sfide nei Club", Color(0.12, 0.16, 0.26, 0.95), Color(0.5, 0.7, 0.95, 1.0))
+    var btn_story = _create_menu_button(
+        "⚔️  STORIA", 
+        "Campagna Roguelike & Sfide nei Club del Reame", 
+        Color(0.11, 0.22, 0.48, 0.98), 
+        Color(0.96, 0.82, 0.35, 1.0)
+    )
     btn_story.pressed.connect(_on_btn_story_pressed)
     btn_box.add_child(btn_story)
 
-    # 2. PARTITA RAPIDA (PRIMARY GOLD BUTTON)
-    quick_play_btn = _create_menu_button("🃏  PARTITA RAPIDA", "Burraco Tradizionale F.I.BUR 1v1", Color(0.16, 0.13, 0.04, 0.98), Color(0.98, 0.82, 0.22, 1.0), true)
+    # 2. BURRACO VELOCE (PRIMARY HERO BUTTON - CLASH ROYALE KING'S GOLD)
+    quick_play_btn = _create_menu_button(
+        "🃏  BURRACO VELOCE", 
+        "Partita Rapida Tradizionale F.I.BUR 1v1", 
+        Color(0.72, 0.42, 0.04, 0.98), 
+        Color(1.0, 0.88, 0.28, 1.0), 
+        true
+    )
     quick_play_btn.pressed.connect(_start_quick_game)
     btn_box.add_child(quick_play_btn)
 
-    # 3. ONLINE MULTIPLAYER
-    var btn_online = _create_menu_button("🌐  ONLINE MULTIPLAYER", "Tornei, Classificate & Stanze Private", Color(0.08, 0.18, 0.14, 0.95), Color(0.4, 0.9, 0.7, 1.0))
+    # 3. ONLINE
+    var btn_online = _create_menu_button(
+        "🌐  ONLINE", 
+        "Tornei, Classificate & Stanze con Amici", 
+        Color(0.08, 0.38, 0.22, 0.98), 
+        Color(0.45, 0.95, 0.68, 1.0)
+    )
     btn_online.pressed.connect(_on_btn_online_pressed)
     btn_box.add_child(btn_online)
 
     # 4. REGOLE
-    var btn_rules = _create_menu_button("📜  REGOLE F.I.BUR", "Manuale Ufficiale, Burrachi & Punteggi", Color(0.18, 0.12, 0.08, 0.95), Color(0.95, 0.78, 0.5, 1.0))
+    var btn_rules = _create_menu_button(
+        "📜  REGOLE", 
+        "Manuale Ufficiale, Burrachi & Punteggi", 
+        Color(0.46, 0.12, 0.08, 0.98), 
+        Color(1.0, 0.76, 0.45, 1.0)
+    )
     btn_rules.pressed.connect(_show_rules_modal)
     btn_box.add_child(btn_rules)
 
-    # Bottom Footer Bar
+    # 7. Subdued Golden Footer
     var footer = Label.new()
-    footer.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-    footer.offset_top = -32.0
-    footer.offset_bottom = -8.0
     footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    footer.text = "WILD-CARDS Burraco  •  Edizione Ufficiale F.I.BUR  •  v1.0.0 Mobile"
-    footer.add_theme_font_size_override("font_size", 12)
-    footer.add_theme_color_override("font_color", Color(0.65, 0.72, 0.75, 0.75))
-    main_menu_layer.add_child(footer)
+    footer.text = "✦  WILD-CARDS BURRACO  •  EDIZIONE UFFICIALE F.I.BUR  ✦"
+    footer.add_theme_font_size_override("font_size", 11)
+    footer.add_theme_color_override("font_color", Color(1.0, 0.92, 0.72, 0.85))
+    main_vbox.add_child(footer)
 
 func _create_menu_button(title: String, subtitle: String, bg_col: Color, border_col: Color, is_primary: bool = false) -> Button:
     var btn = Button.new()
-    btn.custom_minimum_size = Vector2(400, 64)
+    btn.custom_minimum_size = Vector2(580, 78)
     btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
+    # 3D Clash Royale style bevel with thick border and heavy shadow
     var sb = StyleBoxFlat.new()
     sb.bg_color = bg_col
     sb.border_color = border_col
-    sb.border_width_left = 3 if is_primary else 2
-    sb.border_width_top = 3 if is_primary else 2
-    sb.border_width_right = 3 if is_primary else 2
-    sb.border_width_bottom = 3 if is_primary else 2
-    sb.corner_radius_top_left = 8
-    sb.corner_radius_top_right = 8
-    sb.corner_radius_bottom_right = 8
-    sb.corner_radius_bottom_left = 8
-    sb.shadow_color = Color(0, 0, 0, 0.5)
-    sb.shadow_size = 4
-    sb.shadow_offset = Vector2(0, 2)
+    sb.border_width_left = 4 if is_primary else 3
+    sb.border_width_top = 4 if is_primary else 3
+    sb.border_width_right = 4 if is_primary else 3
+    sb.border_width_bottom = 6 if is_primary else 5
+    sb.corner_radius_top_left = 16
+    sb.corner_radius_top_right = 16
+    sb.corner_radius_bottom_right = 16
+    sb.corner_radius_bottom_left = 16
+    sb.shadow_color = Color(0, 0, 0, 0.7)
+    sb.shadow_size = 6
+    sb.shadow_offset = Vector2(0, 5)
     btn.add_theme_stylebox_override("normal", sb)
 
     var sb_hover = sb.duplicate()
-    sb_hover.bg_color = bg_col.lightened(0.12)
+    sb_hover.bg_color = bg_col.lightened(0.14)
     sb_hover.border_color = border_col.lightened(0.2)
+    sb_hover.shadow_offset = Vector2(0, 6)
     btn.add_theme_stylebox_override("hover", sb_hover)
 
     var sb_pressed = sb.duplicate()
-    sb_pressed.bg_color = bg_col.darkened(0.1)
+    sb_pressed.bg_color = bg_col.darkened(0.12)
+    sb_pressed.shadow_offset = Vector2(0, 2)
     btn.add_theme_stylebox_override("pressed", sb_pressed)
 
     var vbox = VBoxContainer.new()
@@ -286,19 +327,18 @@ func _create_menu_button(title: String, subtitle: String, bg_col: Color, border_
     var l_title = Label.new()
     l_title.text = title
     l_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    l_title.add_theme_font_size_override("font_size", 17 if is_primary else 16)
-    l_title.add_theme_color_override("font_color", Color(1.0, 0.95, 0.8) if is_primary else Color(0.95, 0.95, 0.95))
+    l_title.add_theme_font_size_override("font_size", 23 if is_primary else 21)
+    l_title.add_theme_color_override("font_color", Color(1.0, 0.98, 0.90) if is_primary else Color(1.0, 1.0, 1.0))
     vbox.add_child(l_title)
 
     var l_sub = Label.new()
     l_sub.text = subtitle
     l_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    l_sub.add_theme_font_size_override("font_size", 11)
-    l_sub.add_theme_color_override("font_color", border_col.lightened(0.15))
+    l_sub.add_theme_font_size_override("font_size", 12)
+    l_sub.add_theme_color_override("font_color", border_col.lightened(0.25))
     vbox.add_child(l_sub)
 
     return btn
-
 # ==============================================================================
 # 3. GAME TRANSITIONS & MODALS
 # ==============================================================================
@@ -373,9 +413,9 @@ func _build_rules_modal() -> void:
     rules_modal.add_child(bg)
 
     var panel = Panel.new()
-    panel.custom_minimum_size = Vector2(980, 600)
-    panel.size = Vector2(980, 600)
-    panel.position = Vector2((1280 - 980) / 2.0, (720 - 600) / 2.0)
+    panel.custom_minimum_size = Vector2(960, 580)
+    panel.size = Vector2(960, 580)
+    panel.position = Vector2((1280 - 960) / 2.0, (720 - 580) / 2.0)
     var psb = StyleBoxFlat.new()
     psb.bg_color = Color(0.06, 0.09, 0.12, 0.98)
     psb.border_color = Color(0.96, 0.82, 0.25, 1.0)
@@ -606,6 +646,18 @@ func _check_cli_args() -> void:
                     mgr.opponent_melds.append(m3)
 
                     mgr.refresh_all_ui()
+            )
+
+        if "test-menu" in arg:
+            get_tree().create_timer(0.2).timeout.connect(func():
+                _exit_splash_to_menu()
+                get_tree().create_timer(0.6).timeout.connect(func():
+                    var img = get_viewport().get_texture().get_image()
+                    var p = ProjectSettings.globalize_path("res://assets/menu_screenshot.png")
+                    img.save_png(p)
+                    print("MENU_SCREENSHOT_SAVED: ", p)
+                    get_tree().quit()
+                )
             )
 
         if "screenshot" in arg:
