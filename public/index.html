@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<script src="coi-serviceworker.js"></script>
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-		<meta name="apple-mobile-web-app-title" content="Burraco">
-		<meta name="theme-color" content="#060907">
-		<meta name="mobile-web-app-capable" content="yes">
-		<link rel="apple-touch-icon" href="index.apple-touch-icon.png">
-		<link rel="manifest" href="manifest.json">
-
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
 		<title>WILD-CARDS: Burraco Digital-Tattile</title>
@@ -35,30 +26,30 @@ body {
 	outline: none;
 }
 
-#status, #status-splash, #status-progress {
+#status {
 	position: absolute;
 	left: 0;
-	right: 0;
-}
-
-#status, #status-splash {
 	top: 0;
+	right: 0;
 	bottom: 0;
-}
-
-#status {
-	background-color: #060907;
+	background-color: #05070a;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	gap: 18px;
 	visibility: hidden;
+	z-index: 100;
 }
 
 #status-splash {
-	max-height: 65%; max-width: 80%;
-	max-width: 100%;
-	margin: auto;
+	width: 82%;
+	max-width: 780px;
+	max-height: 65vh;
+	object-fit: contain;
+	border-radius: 20px;
+	filter: drop-shadow(0 12px 36px rgba(0, 0, 0, 0.85));
+	margin: 0;
 }
 
 #status-progress, #status-notice {
@@ -66,9 +57,12 @@ body {
 }
 
 #status-progress {
-	bottom: 12%;
-	width: 45%; height: 8px; accent-color: #f5c83b;
-	margin: 0 auto;
+	width: 45%;
+	max-width: 380px;
+	height: 10px;
+	border-radius: 5px;
+	accent-color: #f5c83b;
+	margin: 0;
 }
 
 #status-notice {
@@ -106,7 +100,7 @@ body {
 
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":27215712,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":29862832,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
