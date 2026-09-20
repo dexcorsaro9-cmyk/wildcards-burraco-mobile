@@ -1,0 +1,20 @@
+# Godot 4+ cache & export artifacts
+.godot/
+*.translation
+export_presets.cfg
+
+# Android export temporary files
+android/
+*.apk
+*.aab
+
+# iOS export temporary files
+ios/
+*.ipa
+
+# System files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.log
