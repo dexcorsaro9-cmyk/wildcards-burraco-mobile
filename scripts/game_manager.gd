@@ -35,6 +35,22 @@ var selected_cards: Array[BurracoCardData] = []
 @onready var opp_count_label: Label = $"../UI/TableLayer/OppCountLabel"
 @onready var discard_top_view: Control = get_node_or_null("../UI/TableLayer/CenterArea/DiscardTop")
 @onready var stock_btn: BaseButton = $"../UI/TableLayer/CenterArea/StockButton"
+@onready var stock_label: Label = get_node_or_null("../UI/TableLayer/CenterArea/StockLabel")
+@onready var pozzetto_p_card: Control = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoPlayer/CardBack")
+@onready var pozzetto_p_shadow: Control = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoPlayer/Shadow")
+@onready var pozzetto_p_empty: Control = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoPlayer/EmptySlot")
+@onready var pozzetto_p_badge: Control = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoPlayer/Badge")
+@onready var pozzetto_p_badge_lbl: Label = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoPlayer/Badge/BadgeLabel")
+@onready var pozzetto_p_label: Label = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoPlayerLabel")
+@onready var pozzetto_p_btn: BaseButton = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoPlayer/PozzettoPlayerBtn")
+
+@onready var pozzetto_o_card: Control = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoOpponent/CardBack")
+@onready var pozzetto_o_shadow: Control = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoOpponent/Shadow")
+@onready var pozzetto_o_empty: Control = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoOpponent/EmptySlot")
+@onready var pozzetto_o_badge: Control = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoOpponent/Badge")
+@onready var pozzetto_o_badge_lbl: Label = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoOpponent/Badge/BadgeLabel")
+@onready var pozzetto_o_label: Label = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoOpponentLabel")
+@onready var pozzetto_o_btn: BaseButton = get_node_or_null("../UI/TableLayer/CenterArea/PozzettoOpponent/PozzettoOppBtn")
 @onready var discard_btn_action: BaseButton = get_node_or_null("../UI/TableLayer/CenterArea/TakeDiscardButton")
 @onready var discard_label_btn: BaseButton = $"../UI/TableLayer/CenterArea/TakeDiscardLabelBtn"
 @onready var discard_scroll: ScrollContainer = get_node_or_null("../UI/TableLayer/CenterArea/DiscardScroll")
@@ -53,6 +69,20 @@ var card_view_script = preload("res://scripts/card_view.gd")
 
 func _ready() -> void:
     if stock_btn: stock_btn.pressed.connect(on_player_draw_stock)
+    if pozzetto_p_btn:
+        pozzetto_p_btn.pressed.connect(func():
+            if player_has_pozzetto:
+                set_banner("TUO POZZETTO: Già preso!")
+            else:
+                set_banner("TUO POZZETTO (11 carte): Lo prenderai automaticamente appena esaurirai le carte in mano!")
+        )
+    if pozzetto_o_btn:
+        pozzetto_o_btn.pressed.connect(func():
+            if opponent_has_pozzetto:
+                set_banner("POZZETTO AVVERSARIO: Già preso dall'avversario!")
+            else:
+                set_banner("POZZETTO AVVERSARIO (11 carte): L'avversario lo prenderà appena esaurirà la propria mano!")
+        )
     if discard_label_btn: discard_label_btn.pressed.connect(on_player_take_discard)
     if meld_btn: meld_btn.pressed.connect(on_player_meld_selected)
     if discard_hand_btn: discard_hand_btn.pressed.connect(on_player_discard_selected)
@@ -760,6 +790,48 @@ func refresh_all_ui() -> void:
 
     # Bottoni & Tallone
     if stock_btn: stock_btn.disabled = not (is_player_turn and current_phase == Phase.DRAW)
+    if stock_label:
+        stock_label.text = "TALLONE\n(%d)" % deck.stock_pile.size()
+
+    # Aggiorna Pozzetto Giocatore sul Board
+    var p_count = deck.pozzetto_player.size()
+    if player_has_pozzetto or p_count == 0:
+        if pozzetto_p_card: pozzetto_p_card.visible = false
+        if pozzetto_p_shadow: pozzetto_p_shadow.visible = false
+        if pozzetto_p_badge: pozzetto_p_badge.visible = false
+        if pozzetto_p_empty: pozzetto_p_empty.visible = true
+        if pozzetto_p_label:
+            pozzetto_p_label.text = "TUO POZZ.\n✓ PRESO"
+            pozzetto_p_label.modulate = Color(0.45, 0.95, 0.45)
+    else:
+        if pozzetto_p_card: pozzetto_p_card.visible = true
+        if pozzetto_p_shadow: pozzetto_p_shadow.visible = true
+        if pozzetto_p_badge: pozzetto_p_badge.visible = true
+        if pozzetto_p_empty: pozzetto_p_empty.visible = false
+        if pozzetto_p_badge_lbl: pozzetto_p_badge_lbl.text = str(p_count)
+        if pozzetto_p_label:
+            pozzetto_p_label.text = "TUO POZZ.\n(%d)" % p_count
+            pozzetto_p_label.modulate = Color(1.0, 0.88, 0.35)
+
+    # Aggiorna Pozzetto Avversario sul Board
+    var o_count = deck.pozzetto_opponent.size()
+    if opponent_has_pozzetto or o_count == 0:
+        if pozzetto_o_card: pozzetto_o_card.visible = false
+        if pozzetto_o_shadow: pozzetto_o_shadow.visible = false
+        if pozzetto_o_badge: pozzetto_o_badge.visible = false
+        if pozzetto_o_empty: pozzetto_o_empty.visible = true
+        if pozzetto_o_label:
+            pozzetto_o_label.text = "POZZ. AVV.\n✓ PRESO"
+            pozzetto_o_label.modulate = Color(0.75, 0.75, 0.9)
+    else:
+        if pozzetto_o_card: pozzetto_o_card.visible = true
+        if pozzetto_o_shadow: pozzetto_o_shadow.visible = true
+        if pozzetto_o_badge: pozzetto_o_badge.visible = true
+        if pozzetto_o_empty: pozzetto_o_empty.visible = false
+        if pozzetto_o_badge_lbl: pozzetto_o_badge_lbl.text = str(o_count)
+        if pozzetto_o_label:
+            pozzetto_o_label.text = "POZZ. AVV.\n(%d)" % o_count
+            pozzetto_o_label.modulate = Color(0.9, 0.85, 0.85)
     var has_discards = deck.discard_pile.size() > 0
     var can_take_discard = is_player_turn and current_phase == Phase.DRAW and has_discards and not (current_mode == GameMode.WILD and discard_frozen_turns > 0)
     if discard_label_btn:

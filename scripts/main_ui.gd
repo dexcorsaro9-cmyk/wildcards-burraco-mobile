@@ -34,8 +34,17 @@ func _ready() -> void:
     if bg_texture_rect:
         bg_texture_rect.texture = AssetLoader.get_tex("res://assets/table_felt_luxury.png")
 
+    var back_tex = AssetLoader.get_tex("res://assets/card_back_luxury.png")
     if stock_btn is TextureButton:
-        stock_btn.texture_normal = AssetLoader.get_tex("res://assets/card_back_luxury.png")
+        stock_btn.texture_normal = back_tex
+
+    var p_card = get_node_or_null("TableLayer/CenterArea/PozzettoPlayer/CardBack")
+    if p_card and p_card is TextureRect:
+        p_card.texture = back_tex
+
+    var o_card = get_node_or_null("TableLayer/CenterArea/PozzettoOpponent/CardBack")
+    if o_card and o_card is TextureRect:
+        o_card.texture = back_tex
 
     # Navigation setup
     if tab_home_btn:
@@ -606,6 +615,11 @@ func _check_cli_args() -> void:
                     mgr.deck.discard_pile.append(CardData.create_card(402, CardData.Suit.CLUBS, CardData.Rank.TWO, 0, false))
 
                     mgr.refresh_all_ui()
+            )
+
+        if "test-game" in arg:
+            get_tree().create_timer(0.3).timeout.connect(func():
+                _start_quick_game()
             )
 
         if "test-menu" in arg:
