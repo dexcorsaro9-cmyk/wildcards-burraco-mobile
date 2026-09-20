@@ -17,3 +17,8 @@ Thumbs.db
 Desktop.ini
 *.tmp
 *.log
+
+cloudflared.exe
+active_url.txt
+build/
+

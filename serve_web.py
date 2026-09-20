@@ -4,7 +4,7 @@ import os
 import sys
 
 PORT = 8080
-DIRECTORY = os.path.join(os.path.dirname(__file__), 'build', 'web')
+DIRECTORY = os.path.join(os.path.dirname(__file__), 'public')
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
