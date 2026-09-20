@@ -109,12 +109,12 @@ func _build_splash_screen() -> void:
     bg.color = Color(0.02, 0.03, 0.04, 1.0)
     splash_layer.add_child(bg)
 
-    # Central Logo AAA
+    # Central Logo Pixar / Clash Style (Massive and bold)
     splash_logo = TextureRect.new()
     splash_logo.set_anchors_preset(Control.PRESET_CENTER)
-    splash_logo.custom_minimum_size = Vector2(900, 500)
-    splash_logo.size = Vector2(900, 500)
-    splash_logo.position = Vector2((1280 - 900) / 2.0, (720 - 500) / 2.0 - 25.0)
+    splash_logo.custom_minimum_size = Vector2(1100, 615)
+    splash_logo.size = Vector2(1100, 615)
+    splash_logo.position = Vector2((1280 - 1100) / 2.0, (720 - 615) / 2.0 - 15.0)
     splash_logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     splash_logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
     splash_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_aaa.png")
@@ -124,8 +124,8 @@ func _build_splash_screen() -> void:
     # Tap prompt
     splash_prompt = Label.new()
     splash_prompt.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-    splash_prompt.offset_top = -80.0
-    splash_prompt.offset_bottom = -35.0
+    splash_prompt.offset_top = -65.0
+    splash_prompt.offset_bottom = -25.0
     splash_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     splash_prompt.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
     splash_prompt.text = "✦  TOCCA PER ENTRARE NEL CLUB  ✦"
