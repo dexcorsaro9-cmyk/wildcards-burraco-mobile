@@ -1,4 +1,4 @@
-name: Build & Deploy Mobile (Android APK + Web)
+name: Build Private Android APK
 
 on:
   push:
@@ -6,49 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  export-web:
-    runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:4.3
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Setup Web Export Directory
-        run: |
-          mkdir -v -p ~/.local/share/godot/export_templates
-          mv /root/.local/share/godot/export_templates/4.3.stable ~/.local/share/godot/export_templates/ || true
-          mkdir -v -p build/web
-
-      - name: Build Web Mobile Export
-        run: |
-          godot --headless --verbose --export-release "Web" build/web/index.html
-
-      - name: Inject COI ServiceWorker for Mobile Browsers
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.min.js -o build/web/coi-serviceworker.js
-          sed -i 's#<head>#<head><script src="coi-serviceworker.js"></script>#' build/web/index.html
-
-      - name: Upload GitHub Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/web
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
   export-android:
     runs-on: ubuntu-latest
     container:
@@ -70,29 +30,9 @@ jobs:
         run: |
           godot --headless --verbose --export-debug "Android" build/android/wildcards-burraco.apk
 
-      - name: Upload APK Build Artifact
+      - name: Upload Private APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: wildcards-burraco-apk
           path: build/android/wildcards-burraco.apk
-
-      - name: Create / Update GitHub Release with APK
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/heads/main')
-        with:
-          tag_name: v1.0.0-mobile
-          name: "WILD-CARDS Burraco Mobile v1.0.0 (Android APK)"
-          body: |
-            ## ?? Download Diretto per Smartphone Android
-            Scarica il file `wildcards-burraco.apk` qui sotto per installare e giocare a **WILD-CARDS Burraco** sul tuo smartphone!
-            
-            ### Novità di questa versione:
-            - ?? **Mazzo Completo 54/54 Carte 3D** (tutti e 4 i semi + Joker)
-            - ? **Effetti Particellari AAA** al completamento dei Burrachi
-            - ?? **Colonna Sonora Lofi Taverna Medievale** procedurale
-            - ?? **Tabellino Analitico Ufficiale F.I.BUR**
-            - ?? **Blind Box 3D & Collezione Carte**
-          files: build/android/wildcards-burraco.apk
-          generate_release_notes: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          retention-days: 14
