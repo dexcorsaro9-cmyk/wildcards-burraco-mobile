@@ -226,10 +226,10 @@ grow_vertical = 2
 [node name="OpponentProfileCard" type="Control" parent="UI/TableLayer"]
 layout_mode = 1
 anchors_preset = 0
-offset_left = 15.0
-offset_top = 6.0
-offset_right = 340.0
-offset_bottom = 66.0
+offset_left = 22.0
+offset_top = 40.0
+offset_right = 352.0
+offset_bottom = 100.0
 
 [node name="AvatarOpp" type="TextureRect" parent="UI/TableLayer/OpponentProfileCard"]
 layout_mode = 0
@@ -249,8 +249,8 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_turn_inactive")
 
 [node name="OppInfoVBox" type="VBoxContainer" parent="UI/TableLayer/OpponentProfileCard"]
 layout_mode = 0
-offset_left = 62.0
-offset_top = 6.0
+offset_left = 64.0
+offset_top = 4.0
 offset_right = 320.0
 offset_bottom = 52.0
 theme_override_constants/separation = 2
@@ -265,15 +265,15 @@ text = "Sir Alistair (Liv. 14)"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.9, 1)
 theme_override_font_sizes/font_size = 11
-text = "🂠 11 carte  •  🏺 Pozzetto"
+text = "🂠 11 carte  •  🏺 Pozzetto in gioco"
 
 [node name="SpeechBubbleOpp" type="PanelContainer" parent="UI/TableLayer"]
 visible = false
 layout_mode = 0
-offset_left = 65.0
-offset_top = 68.0
+offset_left = 70.0
+offset_top = 96.0
 offset_right = 310.0
-offset_bottom = 104.0
+offset_bottom = 132.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_bubble")
 
 [node name="SpeechBubbleOppLabel" type="Label" parent="UI/TableLayer/SpeechBubbleOpp"]
@@ -287,10 +287,10 @@ vertical_alignment = 1
 [node name="LiveScoreboard" type="Panel" parent="UI/TableLayer"]
 layout_mode = 1
 anchors_preset = 0
-offset_left = 425.0
-offset_top = 6.0
-offset_right = 705.0
-offset_bottom = 66.0
+offset_left = 440.0
+offset_top = 40.0
+offset_right = 700.0
+offset_bottom = 100.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_scoreboard")
 
 [node name="LiveScoreVBox" type="VBoxContainer" parent="UI/TableLayer/LiveScoreboard"]
@@ -323,8 +323,10 @@ text = "AVV: 0 pt | 0 🥇 0 🥈"
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 68.0
-offset_bottom = 94.0
+offset_left = 20.0
+offset_top = 104.0
+offset_right = -20.0
+offset_bottom = 132.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.35, 1)
 theme_override_font_sizes/font_size = 14
@@ -339,22 +341,22 @@ layout_mode = 0
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 15.0
-offset_top = 96.0
-offset_right = -15.0
-offset_bottom = 205.0
+offset_left = 20.0
+offset_top = 136.0
+offset_right = -20.0
+offset_bottom = 310.0
 grow_horizontal = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="CenterArea" type="Control" parent="UI/TableLayer"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 15.0
-offset_top = 215.0
-offset_right = -15.0
-offset_bottom = 425.0
+offset_left = 20.0
+offset_top = 325.0
+offset_right = -20.0
+offset_bottom = 525.0
 grow_horizontal = 2
 
 [node name="StockShadow" type="ColorRect" parent="UI/TableLayer/CenterArea"]
@@ -379,9 +381,9 @@ stretch_mode = 5
 [node name="StockLabel" type="Label" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 2.0
-offset_top = 118.0
+offset_top = 116.0
 offset_right = 80.0
-offset_bottom = 152.0
+offset_bottom = 148.0
 theme_override_colors/font_color = Color(0.96, 0.82, 0.22, 1)
 theme_override_font_sizes/font_size = 11
 text = "TALLONE"
@@ -462,13 +464,12 @@ mouse_default_cursor_shape = 2
 [node name="PozzettoPlayerLabel" type="Label" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 82.0
-offset_top = 118.0
+offset_top = 116.0
 offset_right = 160.0
-offset_bottom = 152.0
+offset_bottom = 148.0
 theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
 theme_override_font_sizes/font_size = 11
-text = "TUO POZZ.
-(11)"
+text = "TUO POZZ.\n(11)"
 horizontal_alignment = 1
 
 [node name="PozzettoOpponent" type="Control" parent="UI/TableLayer/CenterArea"]
@@ -546,20 +547,19 @@ mouse_default_cursor_shape = 2
 [node name="PozzettoOpponentLabel" type="Label" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 162.0
-offset_top = 118.0
+offset_top = 116.0
 offset_right = 240.0
-offset_bottom = 152.0
+offset_bottom = 148.0
 theme_override_colors/font_color = Color(0.85, 0.85, 0.88, 1)
 theme_override_font_sizes/font_size = 11
-text = "POZZ. AVV.
-(11)"
+text = "POZZ. AVV.\n(11)"
 horizontal_alignment = 1
 
 [node name="DiscardScroll" type="ScrollContainer" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 248.0
 offset_top = 6.0
-offset_right = 684.0
+offset_right = 675.0
 offset_bottom = 146.0
 horizontal_scroll_mode = 1
 vertical_scroll_mode = 0
@@ -570,12 +570,12 @@ size_flags_vertical = 3
 theme_override_constants/separation = -42
 
 [node name="TakeDiscardLabelBtn" type="Button" parent="UI/TableLayer/CenterArea"]
-custom_minimum_size = Vector2(436, 38)
+custom_minimum_size = Vector2(425, 38)
 layout_mode = 0
 offset_left = 248.0
-offset_top = 154.0
-offset_right = 684.0
-offset_bottom = 194.0
+offset_top = 150.0
+offset_right = 675.0
+offset_bottom = 188.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_gold_btn")
 theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
 theme_override_font_sizes/font_size = 14
@@ -595,21 +595,21 @@ layout_mode = 0
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 15.0
-offset_top = 425.0
-offset_right = -15.0
-offset_bottom = 665.0
+offset_left = 20.0
+offset_top = 540.0
+offset_right = -20.0
+offset_bottom = 760.0
 grow_horizontal = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="PlayerProfileCard" type="Control" parent="UI/TableLayer"]
 layout_mode = 1
 anchors_preset = 0
-offset_left = 15.0
-offset_top = 672.0
-offset_right = 240.0
-offset_bottom = 724.0
+offset_left = 20.0
+offset_top = 775.0
+offset_right = 250.0
+offset_bottom = 830.0
 
 [node name="AvatarPlayer" type="TextureRect" parent="UI/TableLayer/PlayerProfileCard"]
 layout_mode = 0
@@ -629,9 +629,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_turn_inactive")
 
 [node name="PlayerNameLabel" type="Label" parent="UI/TableLayer/PlayerProfileCard"]
 layout_mode = 0
-offset_left = 56.0
+offset_left = 58.0
 offset_top = 14.0
-offset_right = 210.0
+offset_right = 220.0
 offset_bottom = 36.0
 theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
 theme_override_font_sizes/font_size = 13
@@ -640,10 +640,10 @@ text = "Tu (Campione)"
 [node name="SpeechBubblePlayer" type="PanelContainer" parent="UI/TableLayer"]
 visible = false
 layout_mode = 0
-offset_left = 60.0
-offset_top = 620.0
-offset_right = 295.0
-offset_bottom = 656.0
+offset_left = 65.0
+offset_top = 720.0
+offset_right = 300.0
+offset_bottom = 756.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_bubble")
 
 [node name="SpeechBubblePlayerLabel" type="Label" parent="UI/TableLayer/SpeechBubblePlayer"]
@@ -655,12 +655,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="QuickChatBtn" type="Button" parent="UI/TableLayer"]
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
-offset_left = 655.0
-offset_top = 672.0
-offset_right = 705.0
-offset_bottom = 722.0
+offset_left = 650.0
+offset_top = 775.0
+offset_right = 700.0
+offset_bottom = 825.0
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_gold_btn")
 theme_override_font_sizes/font_size = 20
@@ -670,41 +670,53 @@ text = "💬"
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 15.0
-offset_top = 732.0
-offset_right = -15.0
-offset_bottom = 782.0
+offset_left = 20.0
+offset_top = 840.0
+offset_right = -20.0
+offset_bottom = 898.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
 alignment = 1
 
 [node name="MeldBtn" type="Button" parent="UI/TableLayer/Actions"]
-custom_minimum_size = Vector2(160, 48)
+custom_minimum_size = Vector2(162, 54)
 layout_mode = 2
 text = "CALA"
 
 [node name="DiscardBtn" type="Button" parent="UI/TableLayer/Actions"]
-custom_minimum_size = Vector2(160, 48)
+custom_minimum_size = Vector2(162, 54)
 layout_mode = 2
 text = "SCARTA"
 
 [node name="SortSuitBtn" type="Button" parent="UI/TableLayer/Actions"]
-custom_minimum_size = Vector2(160, 48)
+custom_minimum_size = Vector2(162, 54)
 layout_mode = 2
 text = "SEME"
 
 [node name="SortRankBtn" type="Button" parent="UI/TableLayer/Actions"]
-custom_minimum_size = Vector2(160, 48)
+custom_minimum_size = Vector2(162, 54)
 layout_mode = 2
 text = "NUMERO"
+
+[node name="HandContainer" type="HBoxContainer" parent="UI/TableLayer"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 918.0
+offset_right = -10.0
+offset_bottom = 1180.0
+grow_horizontal = 2
+theme_override_constants/separation = -48
+alignment = 1
 
 [node name="ChatMenuModal" type="Panel" parent="UI/TableLayer"]
 visible = false
 layout_mode = 0
-offset_left = 410.0
-offset_top = 405.0
+offset_left = 405.0
+offset_top = 500.0
 offset_right = 695.0
-offset_bottom = 665.0
+offset_bottom = 760.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_chat_menu")
 
 [node name="ChatTitle" type="Label" parent="UI/TableLayer/ChatMenuModal"]
@@ -762,17 +774,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "🔥 Occhio al Burraco!"
 
-[node name="HandContainer" type="HBoxContainer" parent="UI/TableLayer"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 10.0
-offset_top = 795.0
-offset_right = -10.0
-offset_bottom = 945.0
-grow_horizontal = 2
-theme_override_constants/separation = -48
-alignment = 1
 
 [node name="BlindBoxLayer" type="Control" parent="UI"]
 visible = false
