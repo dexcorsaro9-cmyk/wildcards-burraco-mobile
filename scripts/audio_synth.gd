@@ -10,7 +10,7 @@ var bgm_generator: AudioStreamGenerator
 var bgm_playback: AudioStreamGeneratorPlayback
 
 var sample_rate: float = 22050.0
-var is_muted: bool = false
+var is_muted: bool = true
 var bgm_time: float = 0.0
 var current_note_idx: int = 0
 var note_timer: float = 0.0
@@ -108,6 +108,14 @@ func play_box_open() -> void:
     if is_muted: return
     _synthesize_sfx(0.22, 280.0, 1100.0, 0.4, false)
     _synthesize_sfx_arpeggio([523.25, 659.25, 783.99, 1046.5], 0.5)
+
+func play_splash_jingle() -> void:
+    if is_muted: return
+    _synthesize_sfx_arpeggio([261.63, 329.63, 392.0, 523.25, 659.25, 783.99, 1046.5], 1.2)
+
+func play_menu_click() -> void:
+    if is_muted: return
+    _synthesize_sfx(0.08, 440.0, 880.0, 0.28, false)
 
 func _synthesize_sfx(duration: float, start_f: float, end_f: float, vol: float, noise: bool) -> void:
     if is_muted or sfx_playback == null: return

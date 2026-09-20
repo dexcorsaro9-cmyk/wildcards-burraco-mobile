@@ -51,8 +51,9 @@ var card_view_script = preload("res://scripts/card_view.gd")
 
 func _ready() -> void:
     if stock_btn: stock_btn.pressed.connect(on_player_draw_stock)
-    if discard_btn_action: discard_btn_action.pressed.connect(on_player_take_discard)
-    if discard_label_btn: discard_label_btn.pressed.connect(on_player_take_discard)
+    if discard_btn_action: discard_btn_action.pressed.connect(open_discard_inspector)
+    if discard_label_btn: discard_label_btn.pressed.connect(open_discard_inspector)
+    _build_discard_inspector()
     if meld_btn: meld_btn.pressed.connect(on_player_meld_selected)
     if discard_hand_btn: discard_hand_btn.pressed.connect(on_player_discard_selected)
     if sort_suit_btn: sort_suit_btn.pressed.connect(sort_by_suit)
@@ -100,6 +101,169 @@ func start_new_match() -> void:
 
     deck.initialize_and_deal(player_hand, opponent_hand)
     refresh_all_ui()
+
+var discard_inspector_modal: Control = null
+var inspector_cards_box: HBoxContainer = null
+var inspector_title: Label = null
+var inspector_take_btn: Button = null
+
+func _build_discard_inspector() -> void:
+    var ui_root = get_node_or_null("../UI")
+    if ui_root == null: return
+
+    discard_inspector_modal = Control.new()
+    discard_inspector_modal.name = "DiscardInspectorModal"
+    discard_inspector_modal.set_anchors_preset(Control.PRESET_FULL_RECT)
+    discard_inspector_modal.z_index = 65
+    discard_inspector_modal.visible = false
+    ui_root.add_child(discard_inspector_modal)
+
+    var bg = ColorRect.new()
+    bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+    bg.color = Color(0, 0, 0, 0.8)
+    discard_inspector_modal.add_child(bg)
+
+    var p = Panel.new()
+    p.custom_minimum_size = Vector2(1100, 530)
+    p.size = Vector2(1100, 530)
+    p.position = Vector2((1280 - 1100) / 2.0, (720 - 530) / 2.0)
+    var psb = StyleBoxFlat.new()
+    psb.bg_color = Color(0.06, 0.11, 0.08, 0.98)
+    psb.border_color = Color(0.96, 0.82, 0.25, 1.0)
+    psb.set_border_width_all(3)
+    psb.set_corner_radius_all(12)
+    psb.shadow_size = 14
+    psb.shadow_color = Color(0, 0, 0, 0.7)
+    p.add_theme_stylebox_override("panel", psb)
+    discard_inspector_modal.add_child(p)
+
+    inspector_title = Label.new()
+    inspector_title.text = "🎴 MONTE DEGLI SCARTI"
+    inspector_title.position = Vector2(30, 18)
+    inspector_title.add_theme_font_size_override("font_size", 22)
+    inspector_title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35, 1.0))
+    p.add_child(inspector_title)
+
+    var sub = Label.new()
+    sub.text = "Esamina attentamente tutte le carte nel monte prima di decidere se raccoglierle o pescare dal tallone"
+    sub.position = Vector2(30, 48)
+    sub.add_theme_font_size_override("font_size", 13)
+    sub.add_theme_color_override("font_color", Color(0.75, 0.85, 0.8, 1.0))
+    p.add_child(sub)
+
+    var close_btn = Button.new()
+    close_btn.text = "✖ CHIUDI"
+    close_btn.custom_minimum_size = Vector2(100, 36)
+    close_btn.position = Vector2(1100 - 130, 18)
+    var csb = StyleBoxFlat.new()
+    csb.bg_color = Color(0.2, 0.1, 0.12, 0.9)
+    csb.border_color = Color(0.9, 0.4, 0.4, 1.0)
+    csb.set_border_width_all(2)
+    csb.set_corner_radius_all(6)
+    close_btn.add_theme_stylebox_override("normal", csb)
+    close_btn.pressed.connect(func(): discard_inspector_modal.visible = false)
+    p.add_child(close_btn)
+
+    var scroll = ScrollContainer.new()
+    scroll.position = Vector2(25, 80)
+    scroll.size = Vector2(1050, 355)
+    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    p.add_child(scroll)
+
+    inspector_cards_box = HBoxContainer.new()
+    inspector_cards_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    inspector_cards_box.add_theme_constant_override("separation", 12)
+    scroll.add_child(inspector_cards_box)
+
+    var b_box = HBoxContainer.new()
+    b_box.position = Vector2(25, 455)
+    b_box.size = Vector2(1050, 52)
+    b_box.alignment = BoxContainer.ALIGNMENT_CENTER
+    b_box.add_theme_constant_override("separation", 25)
+    p.add_child(b_box)
+
+    inspector_take_btn = Button.new()
+    inspector_take_btn.custom_minimum_size = Vector2(360, 48)
+    inspector_take_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+    var tsb = StyleBoxFlat.new()
+    tsb.bg_color = Color(0.12, 0.35, 0.18, 0.98)
+    tsb.border_color = Color(0.96, 0.82, 0.25, 1.0)
+    tsb.set_border_width_all(2)
+    tsb.set_corner_radius_all(8)
+    inspector_take_btn.add_theme_stylebox_override("normal", tsb)
+    inspector_take_btn.add_theme_font_size_override("font_size", 16)
+    inspector_take_btn.add_theme_color_override("font_color", Color(1.0, 0.95, 0.7, 1.0))
+    inspector_take_btn.pressed.connect(func():
+        on_player_take_discard()
+        if discard_inspector_modal: discard_inspector_modal.visible = false
+    )
+    b_box.add_child(inspector_take_btn)
+
+    var btn_stock_draw = Button.new()
+    btn_stock_draw.text = "↩️  CHIUDI (PREFERISCO PESCARE DAL TALLONE)"
+    btn_stock_draw.custom_minimum_size = Vector2(380, 48)
+    btn_stock_draw.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+    var ssb = StyleBoxFlat.new()
+    ssb.bg_color = Color(0.16, 0.2, 0.26, 0.95)
+    ssb.border_color = Color(0.5, 0.7, 0.9, 1.0)
+    ssb.set_border_width_all(2)
+    ssb.set_corner_radius_all(8)
+    btn_stock_draw.add_theme_stylebox_override("normal", ssb)
+    btn_stock_draw.add_theme_font_size_override("font_size", 14)
+    btn_stock_draw.add_theme_color_override("font_color", Color(0.9, 0.95, 1.0, 1.0))
+    btn_stock_draw.pressed.connect(func():
+        discard_inspector_modal.visible = false
+    )
+    b_box.add_child(btn_stock_draw)
+
+func open_discard_inspector() -> void:
+    if deck.discard_pile.is_empty():
+        set_banner("Il monte degli scarti è vuoto.")
+        return
+
+    if discard_inspector_modal == null:
+        _build_discard_inspector()
+
+    if inspector_cards_box:
+        for c in inspector_cards_box.get_children():
+            c.queue_free()
+
+        var pile_size = deck.discard_pile.size()
+        for idx in range(pile_size):
+            var card = deck.discard_pile[idx]
+            var card_holder = VBoxContainer.new()
+            card_holder.alignment = BoxContainer.ALIGNMENT_CENTER
+            card_holder.add_theme_constant_override("separation", 4)
+            inspector_cards_box.add_child(card_holder)
+
+            var cv = CardView.new()
+            card_holder.add_child(cv)
+            cv.setup(card)
+
+            var tag = Label.new()
+            tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+            tag.add_theme_font_size_override("font_size", 10)
+            if idx == pile_size - 1:
+                tag.text = "ULTIMO SCARTO"
+                tag.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+            else:
+                tag.text = "#%d" % (idx + 1)
+                tag.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+            card_holder.add_child(tag)
+
+    if inspector_title:
+        inspector_title.text = "🎴 MONTE DEGLI SCARTI (%d CARTE DISPONIBILI)" % deck.discard_pile.size()
+
+    if inspector_take_btn:
+        var can_take = is_player_turn and current_phase == Phase.DRAW and not (current_mode == GameMode.WILD and discard_frozen_turns > 0)
+        inspector_take_btn.disabled = not can_take
+        if can_take:
+            inspector_take_btn.text = "📥  RACCOGLI TUTTO IL MONTE (%d CARTE)" % deck.discard_pile.size()
+        else:
+            inspector_take_btn.text = "🔒  NON PUOI RACCOGLIERE ORA"
+
+    discard_inspector_modal.visible = true
 
 func on_player_draw_stock() -> void:
     if not is_player_turn or current_phase != Phase.DRAW or match_over: return
@@ -569,9 +733,11 @@ func refresh_all_ui() -> void:
 
     # Bottoni
     if stock_btn: stock_btn.disabled = not (is_player_turn and current_phase == Phase.DRAW)
-    var can_take = is_player_turn and current_phase == Phase.DRAW and deck.discard_pile.size() > 0
-    if discard_btn_action: discard_btn_action.disabled = not can_take
-    if discard_label_btn: discard_label_btn.disabled = not can_take
+    var has_discards = deck.discard_pile.size() > 0
+    if discard_btn_action: discard_btn_action.disabled = not has_discards
+    if discard_label_btn:
+        discard_label_btn.disabled = not has_discards
+        discard_label_btn.text = "👁️ SCARTI (%d)" % deck.discard_pile.size()
     _update_action_buttons()
 
     # Aggiorna top scarti

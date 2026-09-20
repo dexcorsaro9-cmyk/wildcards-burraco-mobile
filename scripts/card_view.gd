@@ -99,8 +99,6 @@ func _process(delta: float) -> void:
 func _on_mouse_entered() -> void:
     is_hovered = true
     z_index = 30
-    if audio_synth != null and audio_synth.has_method("play_card_slide"):
-        audio_synth.play_card_slide()
     card_hovered.emit(self, true)
 
 func _on_mouse_exited() -> void:
@@ -111,8 +109,6 @@ func _on_mouse_exited() -> void:
 func _on_gui_input(event: InputEvent) -> void:
     if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
         card_clicked.emit(self)
-        if audio_synth != null and audio_synth.has_method("play_card_place"):
-            audio_synth.play_card_place()
 
 func set_selected(p_sel: bool) -> void:
     is_selected = p_sel
