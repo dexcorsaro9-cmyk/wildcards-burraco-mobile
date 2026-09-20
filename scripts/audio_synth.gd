@@ -117,6 +117,10 @@ func play_menu_click() -> void:
     if is_muted: return
     _synthesize_sfx(0.08, 440.0, 880.0, 0.28, false)
 
+func play_chat_pop() -> void:
+    if is_muted: return
+    _synthesize_sfx(0.09, 520.0, 980.0, 0.35, false)
+
 func _synthesize_sfx(duration: float, start_f: float, end_f: float, vol: float, noise: bool) -> void:
     if is_muted or sfx_playback == null: return
     var frames = int(sample_rate * duration)

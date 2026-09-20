@@ -46,6 +46,33 @@ func _ready() -> void:
     if o_card and o_card is TextureRect:
         o_card.texture = back_tex
 
+    # Avatars Setup (Top Store Style)
+    var opp_avatar = get_node_or_null("TableLayer/OpponentProfileCard/AvatarOpp")
+    if opp_avatar and opp_avatar is TextureRect:
+        opp_avatar.texture = AssetLoader.get_tex("res://assets/avatar_opponent.png")
+
+    var player_avatar = get_node_or_null("TableLayer/PlayerProfileCard/AvatarPlayer")
+    if player_avatar and player_avatar is TextureRect:
+        player_avatar.texture = AssetLoader.get_tex("res://assets/avatar_player.png")
+
+    # Quick Chat System
+    var chat_btn = get_node_or_null("TableLayer/QuickChatBtn")
+    var chat_modal = get_node_or_null("TableLayer/ChatMenuModal")
+    if chat_btn and chat_modal:
+        chat_btn.pressed.connect(func():
+            chat_modal.visible = not chat_modal.visible
+        )
+        for i in range(1, 7):
+            var btn = chat_modal.get_node_or_null("ChatList/ChatBtn%d" % i)
+            if btn:
+                btn.pressed.connect(func():
+                    chat_modal.visible = false
+                    show_player_speech(btn.text)
+                    var mgr = get_node_or_null("/root/Main/BurracoGameManager")
+                    if mgr and mgr.has_method("on_player_sent_chat"):
+                        mgr.on_player_sent_chat(btn.text)
+                )
+
     # Navigation setup
     if tab_home_btn:
         tab_home_btn.pressed.connect(_return_to_main_menu)
@@ -639,3 +666,33 @@ func _check_cli_args() -> void:
                 print("SCREENSHOT_SAVED: ", p)
                 get_tree().quit()
             )
+
+func show_player_speech(msg_text: String) -> void:
+    var bubble = get_node_or_null("TableLayer/SpeechBubblePlayer")
+    var lbl = get_node_or_null("TableLayer/SpeechBubblePlayer/SpeechBubblePlayerLabel")
+    if bubble and lbl:
+        lbl.text = msg_text
+        bubble.visible = true
+        bubble.modulate.a = 1.0
+        var audio = get_node_or_null("/root/AudioSynth")
+        if audio and audio.has_method("play_chat_pop"):
+            audio.play_chat_pop()
+        var tw = create_tween()
+        tw.tween_interval(2.5)
+        tw.tween_property(bubble, "modulate:a", 0.0, 0.4)
+        tw.tween_callback(func(): bubble.visible = false)
+
+func show_opp_speech(msg_text: String) -> void:
+    var bubble = get_node_or_null("TableLayer/SpeechBubbleOpp")
+    var lbl = get_node_or_null("TableLayer/SpeechBubbleOpp/SpeechBubbleOppLabel")
+    if bubble and lbl:
+        lbl.text = msg_text
+        bubble.visible = true
+        bubble.modulate.a = 1.0
+        var audio = get_node_or_null("/root/AudioSynth")
+        if audio and audio.has_method("play_chat_pop"):
+            audio.play_chat_pop()
+        var tw = create_tween()
+        tw.tween_interval(2.8)
+        tw.tween_property(bubble, "modulate:a", 0.0, 0.4)
+        tw.tween_callback(func(): bubble.visible = false)

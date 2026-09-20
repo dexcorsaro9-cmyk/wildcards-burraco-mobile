@@ -63,6 +63,11 @@ var selected_cards: Array[BurracoCardData] = []
 @onready var result_label: Label = $"../UI/ModalEndMatch/ResultLabel"
 @onready var score_label: Label = $"../UI/ModalEndMatch/ScoreLabel"
 @onready var mode_btn: Button = get_node_or_null("../UI/HeaderBar/ModeToggleBtn")
+@onready var opp_status_lbl: Label = get_node_or_null("../UI/TableLayer/OpponentProfileCard/OppInfoVBox/OppStatusLabel")
+@onready var turn_ring_opp: Panel = get_node_or_null("../UI/TableLayer/OpponentProfileCard/TurnRingOpp")
+@onready var turn_ring_player: Panel = get_node_or_null("../UI/TableLayer/PlayerProfileCard/TurnRingPlayer")
+@onready var live_score_p: Label = get_node_or_null("../UI/TableLayer/LiveScoreboard/LiveScoreVBox/LiveScorePlayer")
+@onready var live_score_o: Label = get_node_or_null("../UI/TableLayer/LiveScoreboard/LiveScoreVBox/LiveScoreOpp")
 
 var ai: BurracoAI = BurracoAI.new()
 var card_view_script = preload("res://scripts/card_view.gd")
@@ -788,6 +793,50 @@ func refresh_all_ui() -> void:
     if opp_count_label:
         opp_count_label.text = "Mano Avversario: %d carte" % opponent_hand.size()
 
+    # Turn Rings Pulsanti (Store Style)
+    if turn_ring_player:
+        if is_player_turn:
+            turn_ring_player.modulate = Color(0.3, 1.0, 0.4, 1.0)
+        else:
+            turn_ring_player.modulate = Color(0.4, 0.4, 0.4, 0.4)
+
+    if turn_ring_opp:
+        if not is_player_turn:
+            turn_ring_opp.modulate = Color(1.0, 0.85, 0.25, 1.0)
+        else:
+            turn_ring_opp.modulate = Color(0.4, 0.4, 0.4, 0.4)
+
+    # Status Avversario sotto il nome
+    if opp_status_lbl:
+        var poz_txt = "✓ Pozzetto Preso" if opponent_has_pozzetto else "🏺 Pozzetto in gioco"
+        opp_status_lbl.text = "🂠 %d carte  •  %s" % [opponent_hand.size(), poz_txt]
+
+    # Calcolo Tabellino Punti Live sul Tavolo
+    var p_pts = 0
+    var p_clean = 0
+    var p_dirty = 0
+    for m in player_melds:
+        for c in m.cards: p_pts += c.get_points()
+        var bt = m.get_burraco_type()
+        if bt == BurracoRules.BurracoType.CLEAN: p_clean += 1
+        elif bt in [BurracoRules.BurracoType.SEMI_CLEAN, BurracoRules.BurracoType.DIRTY]: p_dirty += 1
+    var p_live_total = p_pts + (p_clean * 200) + (p_dirty * 100)
+
+    var o_pts = 0
+    var o_clean = 0
+    var o_dirty = 0
+    for m in opponent_melds:
+        for c in m.cards: o_pts += c.get_points()
+        var bt = m.get_burraco_type()
+        if bt == BurracoRules.BurracoType.CLEAN: o_clean += 1
+        elif bt in [BurracoRules.BurracoType.SEMI_CLEAN, BurracoRules.BurracoType.DIRTY]: o_dirty += 1
+    var o_live_total = o_pts + (o_clean * 200) + (o_dirty * 100)
+
+    if live_score_p:
+        live_score_p.text = "TU: %d pt | %d 🥇  %d 🥈" % [p_live_total, p_clean, p_dirty]
+    if live_score_o:
+        live_score_o.text = "AVV: %d pt | %d 🥇  %d 🥈" % [o_live_total, o_clean, o_dirty]
+
     # Bottoni & Tallone
     if stock_btn: stock_btn.disabled = not (is_player_turn and current_phase == Phase.DRAW)
     if stock_label:
@@ -1071,3 +1120,27 @@ func sort_by_rank() -> void:
 func set_banner(msg: String) -> void:
     if status_label:
         status_label.text = msg
+
+func on_player_sent_chat(text: String) -> void:
+    var ui = get_node_or_null("../UI")
+    if ui == null: return
+    get_tree().create_timer(1.2).timeout.connect(func():
+        if not is_instance_valid(ui): return
+        var reply = ""
+        if "Buona partita" in text or "Ciao" in text:
+            reply = "Anche a te! Che vinca il migliore! ⚔️"
+        elif "Bella giocata" in text:
+            reply = "Grazie mille! Gioco d'astuzia! 😉"
+        elif "Che fortuna" in text:
+            reply = "La fortuna aiuta gli audaci! 🍀"
+        elif "Mannaggia" in text:
+            reply = "Non disperare, tutto può ancora cambiare! 🛡️"
+        elif "Pozzetto" in text:
+            reply = "Grande giocata! Ora tocca a me rimontare! 🏃"
+        elif "Burraco" in text:
+            reply = "Splendido Burraco! Ma non mi arrendo! 🔥"
+        else:
+            reply = "Buona giocata! 🂠"
+        if ui.has_method("show_opp_speech"):
+            ui.show_opp_speech(reply)
+    )

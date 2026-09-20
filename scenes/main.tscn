@@ -34,6 +34,68 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scoreboard"]
+bg_color = Color(0.04, 0.08, 0.06, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.88, 0.74, 0.25, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bubble"]
+bg_color = Color(0.98, 0.97, 0.92, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.15, 0.2, 0.28, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chat_menu"]
+bg_color = Color(0.07, 0.1, 0.15, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.96, 0.82, 0.25, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_size = 10
+shadow_color = Color(0, 0, 0, 0.7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_turn_active"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.3, 0.95, 0.35, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_turn_inactive"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.5, 0.5, 0.4)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gold_btn"]
 bg_color = Color(0.12, 0.15, 0.22, 0.95)
 border_width_left = 2
@@ -161,37 +223,126 @@ offset_top = 56.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="OpponentProfileCard" type="Control" parent="UI/TableLayer"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 15.0
+offset_top = 6.0
+offset_right = 340.0
+offset_bottom = 66.0
+
+[node name="AvatarOpp" type="TextureRect" parent="UI/TableLayer/OpponentProfileCard"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 54.0
+offset_bottom = 54.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TurnRingOpp" type="Panel" parent="UI/TableLayer/OpponentProfileCard"]
+layout_mode = 0
+offset_right = 56.0
+offset_bottom = 56.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_turn_inactive")
+
+[node name="OppInfoVBox" type="VBoxContainer" parent="UI/TableLayer/OpponentProfileCard"]
+layout_mode = 0
+offset_left = 62.0
+offset_top = 6.0
+offset_right = 320.0
+offset_bottom = 52.0
+theme_override_constants/separation = 2
+
+[node name="OppNameLabel" type="Label" parent="UI/TableLayer/OpponentProfileCard/OppInfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
+theme_override_font_sizes/font_size = 14
+text = "Sir Alistair (Liv. 14)"
+
+[node name="OppStatusLabel" type="Label" parent="UI/TableLayer/OpponentProfileCard/OppInfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.9, 1)
+theme_override_font_sizes/font_size = 11
+text = "🂠 11 carte  •  🏺 Pozzetto"
+
+[node name="SpeechBubbleOpp" type="PanelContainer" parent="UI/TableLayer"]
+visible = false
+layout_mode = 0
+offset_left = 65.0
+offset_top = 68.0
+offset_right = 310.0
+offset_bottom = 104.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bubble")
+
+[node name="SpeechBubbleOppLabel" type="Label" parent="UI/TableLayer/SpeechBubbleOpp"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08, 0.1, 0.15, 1)
+theme_override_font_sizes/font_size = 12
+text = "Buona partita!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LiveScoreboard" type="Panel" parent="UI/TableLayer"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 425.0
+offset_top = 6.0
+offset_right = 705.0
+offset_bottom = 66.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_scoreboard")
+
+[node name="LiveScoreVBox" type="VBoxContainer" parent="UI/TableLayer/LiveScoreboard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = -10.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="LiveScorePlayer" type="Label" parent="UI/TableLayer/LiveScoreboard/LiveScoreVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 11
+text = "TU: 0 pt | 0 🥇 0 🥈"
+
+[node name="LiveScoreOpp" type="Label" parent="UI/TableLayer/LiveScoreboard/LiveScoreVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 1)
+theme_override_font_sizes/font_size = 11
+text = "AVV: 0 pt | 0 🥇 0 🥈"
+
 [node name="StatusLabel" type="Label" parent="UI/TableLayer"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 10.0
-offset_bottom = 38.0
+offset_top = 68.0
+offset_bottom = 94.0
 grow_horizontal = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(1, 0.9, 0.35, 1)
+theme_override_font_sizes/font_size = 14
 text = "TUO TURNO: Pesca dal tallone o raccogli gli scarti"
 horizontal_alignment = 1
 
 [node name="OppCountLabel" type="Label" parent="UI/TableLayer"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 40.0
-offset_bottom = 63.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
-text = "Mano Avversario: 11 carte"
-horizontal_alignment = 1
+visible = false
+layout_mode = 0
 
 [node name="OpponentMelds" type="HBoxContainer" parent="UI/TableLayer"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 15.0
-offset_top = 70.0
+offset_top = 96.0
 offset_right = -15.0
-offset_bottom = 210.0
+offset_bottom = 205.0
 grow_horizontal = 2
 theme_override_constants/separation = 12
 alignment = 1
@@ -445,21 +596,84 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 15.0
-offset_top = 430.0
+offset_top = 425.0
 offset_right = -15.0
-offset_bottom = 710.0
+offset_bottom = 665.0
 grow_horizontal = 2
 theme_override_constants/separation = 12
 alignment = 1
+
+[node name="PlayerProfileCard" type="Control" parent="UI/TableLayer"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 15.0
+offset_top = 672.0
+offset_right = 240.0
+offset_bottom = 724.0
+
+[node name="AvatarPlayer" type="TextureRect" parent="UI/TableLayer/PlayerProfileCard"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 48.0
+offset_bottom = 48.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TurnRingPlayer" type="Panel" parent="UI/TableLayer/PlayerProfileCard"]
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 50.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_turn_inactive")
+
+[node name="PlayerNameLabel" type="Label" parent="UI/TableLayer/PlayerProfileCard"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 14.0
+offset_right = 210.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
+theme_override_font_sizes/font_size = 13
+text = "Tu (Campione)"
+
+[node name="SpeechBubblePlayer" type="PanelContainer" parent="UI/TableLayer"]
+visible = false
+layout_mode = 0
+offset_left = 60.0
+offset_top = 620.0
+offset_right = 295.0
+offset_bottom = 656.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bubble")
+
+[node name="SpeechBubblePlayerLabel" type="Label" parent="UI/TableLayer/SpeechBubblePlayer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08, 0.1, 0.15, 1)
+theme_override_font_sizes/font_size = 12
+text = "Buona partita!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="QuickChatBtn" type="Button" parent="UI/TableLayer"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 0
+offset_left = 655.0
+offset_top = 672.0
+offset_right = 705.0
+offset_bottom = 722.0
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_gold_btn")
+theme_override_font_sizes/font_size = 20
+text = "💬"
 
 [node name="Actions" type="HBoxContainer" parent="UI/TableLayer"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 15.0
-offset_top = 730.0
+offset_top = 732.0
 offset_right = -15.0
-offset_bottom = 780.0
+offset_bottom = 782.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -483,6 +697,70 @@ text = "SEME"
 custom_minimum_size = Vector2(160, 48)
 layout_mode = 2
 text = "NUMERO"
+
+[node name="ChatMenuModal" type="Panel" parent="UI/TableLayer"]
+visible = false
+layout_mode = 0
+offset_left = 410.0
+offset_top = 405.0
+offset_right = 695.0
+offset_bottom = 665.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_chat_menu")
+
+[node name="ChatTitle" type="Label" parent="UI/TableLayer/ChatMenuModal"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 8.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
+theme_override_font_sizes/font_size = 12
+text = "💬 MESSAGGIO RAPIDO"
+horizontal_alignment = 1
+
+[node name="ChatList" type="VBoxContainer" parent="UI/TableLayer/ChatMenuModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 32.0
+offset_right = -10.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="ChatBtn1" type="Button" parent="UI/TableLayer/ChatMenuModal/ChatList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "👋 Buona partita!"
+
+[node name="ChatBtn2" type="Button" parent="UI/TableLayer/ChatMenuModal/ChatList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "👏 Bella giocata!"
+
+[node name="ChatBtn3" type="Button" parent="UI/TableLayer/ChatMenuModal/ChatList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "😱 Che fortuna!"
+
+[node name="ChatBtn4" type="Button" parent="UI/TableLayer/ChatMenuModal/ChatList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "😅 Mannaggia!"
+
+[node name="ChatBtn5" type="Button" parent="UI/TableLayer/ChatMenuModal/ChatList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "🏆 Vado a Pozzetto!"
+
+[node name="ChatBtn6" type="Button" parent="UI/TableLayer/ChatMenuModal/ChatList"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "🔥 Occhio al Burraco!"
 
 [node name="HandContainer" type="HBoxContainer" parent="UI/TableLayer"]
 layout_mode = 1
