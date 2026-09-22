@@ -567,7 +567,7 @@ vertical_scroll_mode = 0
 [node name="DiscardCardsBox" type="HBoxContainer" parent="UI/TableLayer/CenterArea/DiscardScroll"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = -42
+theme_override_constants/separation = -18
 
 [node name="TakeDiscardLabelBtn" type="Button" parent="UI/TableLayer/CenterArea"]
 custom_minimum_size = Vector2(425, 38)

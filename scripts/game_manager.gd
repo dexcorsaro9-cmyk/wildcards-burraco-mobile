@@ -158,10 +158,12 @@ func _build_discard_inspector() -> void:
     bg.color = Color(0, 0, 0, 0.8)
     discard_inspector_modal.add_child(bg)
 
+    var viewport_size = ui_root.get_viewport().get_visible_rect().size
+    var p_size = Vector2(min(660.0, viewport_size.x - 40.0), min(920.0, viewport_size.y - 120.0))
     var p = Panel.new()
-    p.custom_minimum_size = Vector2(1100, 530)
-    p.size = Vector2(1100, 530)
-    p.position = Vector2((1280 - 1100) / 2.0, (720 - 530) / 2.0)
+    p.custom_minimum_size = p_size
+    p.size = p_size
+    p.position = ((viewport_size - p_size) / 2.0).round()
     var psb = StyleBoxFlat.new()
     psb.bg_color = Color(0.06, 0.11, 0.08, 0.98)
     psb.border_color = Color(0.96, 0.82, 0.25, 1.0)
@@ -174,22 +176,25 @@ func _build_discard_inspector() -> void:
 
     inspector_title = Label.new()
     inspector_title.text = "🎴 MONTE DEGLI SCARTI"
-    inspector_title.position = Vector2(30, 18)
-    inspector_title.add_theme_font_size_override("font_size", 22)
+    inspector_title.position = Vector2(24, 16)
+    inspector_title.size = Vector2(p_size.x - 130, 26)
+    inspector_title.add_theme_font_size_override("font_size", 19)
     inspector_title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35, 1.0))
     p.add_child(inspector_title)
 
     var sub = Label.new()
-    sub.text = "Esamina attentamente tutte le carte nel monte prima di decidere se raccoglierle o pescare dal tallone"
-    sub.position = Vector2(30, 48)
-    sub.add_theme_font_size_override("font_size", 13)
+    sub.text = "Esamina tutte le carte nel monte prima di decidere se raccoglierle o pescare dal tallone"
+    sub.position = Vector2(24, 44)
+    sub.size = Vector2(p_size.x - 48, 32)
+    sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    sub.add_theme_font_size_override("font_size", 12)
     sub.add_theme_color_override("font_color", Color(0.75, 0.85, 0.8, 1.0))
     p.add_child(sub)
 
     var close_btn = Button.new()
-    close_btn.text = "✖ CHIUDI"
-    close_btn.custom_minimum_size = Vector2(100, 36)
-    close_btn.position = Vector2(1100 - 130, 18)
+    close_btn.text = "✖"
+    close_btn.custom_minimum_size = Vector2(40, 36)
+    close_btn.position = Vector2(p_size.x - 24 - 40, 14)
     var csb = StyleBoxFlat.new()
     csb.bg_color = Color(0.2, 0.1, 0.12, 0.9)
     csb.border_color = Color(0.9, 0.4, 0.4, 1.0)
@@ -199,27 +204,30 @@ func _build_discard_inspector() -> void:
     close_btn.pressed.connect(func(): discard_inspector_modal.visible = false)
     p.add_child(close_btn)
 
+    var actions_h = 96.0
     var scroll = ScrollContainer.new()
-    scroll.position = Vector2(25, 80)
-    scroll.size = Vector2(1050, 355)
-    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-    scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    scroll.position = Vector2(20, 84)
+    scroll.size = Vector2(p_size.x - 40, p_size.y - 84 - actions_h)
+    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
     p.add_child(scroll)
 
-    inspector_cards_box = HBoxContainer.new()
-    inspector_cards_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
-    inspector_cards_box.add_theme_constant_override("separation", 12)
+    inspector_cards_box = GridContainer.new()
+    inspector_cards_box.columns = 4
+    inspector_cards_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    inspector_cards_box.add_theme_constant_override("h_separation", 14)
+    inspector_cards_box.add_theme_constant_override("v_separation", 16)
     scroll.add_child(inspector_cards_box)
 
-    var b_box = HBoxContainer.new()
-    b_box.position = Vector2(25, 455)
-    b_box.size = Vector2(1050, 52)
-    b_box.alignment = BoxContainer.ALIGNMENT_CENTER
-    b_box.add_theme_constant_override("separation", 25)
+    var b_box = VBoxContainer.new()
+    b_box.position = Vector2(20, p_size.y - actions_h + 6)
+    b_box.size = Vector2(p_size.x - 40, actions_h - 10)
+    b_box.add_theme_constant_override("separation", 8)
     p.add_child(b_box)
 
     inspector_take_btn = Button.new()
-    inspector_take_btn.custom_minimum_size = Vector2(360, 48)
+    inspector_take_btn.custom_minimum_size = Vector2(0, 42)
+    inspector_take_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     inspector_take_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
     var tsb = StyleBoxFlat.new()
     tsb.bg_color = Color(0.12, 0.35, 0.18, 0.98)
@@ -227,7 +235,7 @@ func _build_discard_inspector() -> void:
     tsb.set_border_width_all(2)
     tsb.set_corner_radius_all(8)
     inspector_take_btn.add_theme_stylebox_override("normal", tsb)
-    inspector_take_btn.add_theme_font_size_override("font_size", 16)
+    inspector_take_btn.add_theme_font_size_override("font_size", 15)
     inspector_take_btn.add_theme_color_override("font_color", Color(1.0, 0.95, 0.7, 1.0))
     inspector_take_btn.pressed.connect(func():
         on_player_take_discard()
@@ -236,8 +244,9 @@ func _build_discard_inspector() -> void:
     b_box.add_child(inspector_take_btn)
 
     var btn_stock_draw = Button.new()
-    btn_stock_draw.text = "↩️  CHIUDI (PREFERISCO PESCARE DAL TALLONE)"
-    btn_stock_draw.custom_minimum_size = Vector2(380, 48)
+    btn_stock_draw.text = "↩️  PREFERISCO PESCARE DAL TALLONE"
+    btn_stock_draw.custom_minimum_size = Vector2(0, 38)
+    btn_stock_draw.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     btn_stock_draw.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
     var ssb = StyleBoxFlat.new()
     ssb.bg_color = Color(0.16, 0.2, 0.26, 0.95)
@@ -245,7 +254,7 @@ func _build_discard_inspector() -> void:
     ssb.set_border_width_all(2)
     ssb.set_corner_radius_all(8)
     btn_stock_draw.add_theme_stylebox_override("normal", ssb)
-    btn_stock_draw.add_theme_font_size_override("font_size", 14)
+    btn_stock_draw.add_theme_font_size_override("font_size", 13)
     btn_stock_draw.add_theme_color_override("font_color", Color(0.9, 0.95, 1.0, 1.0))
     btn_stock_draw.pressed.connect(func():
         discard_inspector_modal.visible = false
@@ -905,6 +914,11 @@ func refresh_all_ui() -> void:
             cv.card_clicked.connect(func(_clicked_view):
                 if is_player_turn and current_phase == Phase.DRAW:
                     on_player_take_discard()
+            )
+            # Tocca e tieni premuto sulla striscia: apri il monte intero, carta per carta
+            cv.use_generic_long_press_preview = false
+            cv.card_long_pressed.connect(func(_clicked_view):
+                open_discard_inspector()
             )
         # Scorrimento automatico verso l'ultimo scarto
         if discard_scroll and pile_size > 0:
