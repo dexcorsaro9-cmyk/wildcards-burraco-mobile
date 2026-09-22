@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, viewport-fit=cover">
 		<title>WILD-CARDS: Burraco Digital-Tattile</title>
 		<style>
 html, body, #canvas {
@@ -81,6 +81,7 @@ body {
 		</style>
 		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
 <link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+<link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Burraco"><meta name="theme-color" content="#0d401f"><meta name="mobile-web-app-capable" content="yes">
 	</head>
 	<body>
@@ -196,6 +197,15 @@ const engine = new Engine(GODOT_CONFIG);
 		}, displayFailureNotice);
 	}
 }());
+
+// PWA: registra il Service Worker di caching per installazione e avvio offline.
+if ('serviceWorker' in navigator) {
+	window.addEventListener('load', () => {
+		navigator.serviceWorker.register('./pwa-sw.js').catch((err) => {
+			console.error('PWA Service Worker registration failed:', err);
+		});
+	});
+}
 		</script>
 	</body>
 </html>

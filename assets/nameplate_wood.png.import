@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ca1efsymjajiv"
-path="res://.godot/imported/index.png-55e75fae94bee88f0a6f0f0fc420495b.ctex"
+uid="uid://d13srxs3b7x0f"
+path="res://.godot/imported/nameplate_wood.png-3d61c1df62ff0c774ad3a17a6ebd4b2d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://public/index.png"
-dest_files=["res://.godot/imported/index.png-55e75fae94bee88f0a6f0f0fc420495b.ctex"]
+source_file="res://assets/nameplate_wood.png"
+dest_files=["res://.godot/imported/nameplate_wood.png-3d61c1df62ff0c774ad3a17a6ebd4b2d.ctex"]
 
 [params]
 

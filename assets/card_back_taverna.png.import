@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ca1efsymjajiv"
-path="res://.godot/imported/index.png-55e75fae94bee88f0a6f0f0fc420495b.ctex"
+uid="uid://ci0mw5q64wk7w"
+path="res://.godot/imported/card_back_taverna.png-41309ab906227712029962dcd9b231f5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://public/index.png"
-dest_files=["res://.godot/imported/index.png-55e75fae94bee88f0a6f0f0fc420495b.ctex"]
+source_file="res://assets/card_back_taverna.png"
+dest_files=["res://.godot/imported/card_back_taverna.png-41309ab906227712029962dcd9b231f5.ctex"]
 
 [params]
 
