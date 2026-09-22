@@ -655,10 +655,13 @@ func _create_villain_row(v: CampaignVillain, is_unlocked: bool, is_defeated: boo
     row.add_child(hbox)
 
     var avatar = TextureRect.new()
-    avatar.custom_minimum_size = Vector2(56, 56)
+    avatar.custom_minimum_size = Vector2(64, 64)
     avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    if v.is_boss:
+    var dedicated_avatar = AssetLoader.get_tex("res://assets/villain_%s.png" % v.id)
+    if dedicated_avatar != null:
+        avatar.texture = dedicated_avatar
+    elif v.is_boss:
         avatar.texture = AssetLoader.get_tex("res://assets/creature_apex_dragon.png")
     else:
         avatar.texture = AssetLoader.get_tex(VILLAIN_AVATARS[avatar_index % VILLAIN_AVATARS.size()])
