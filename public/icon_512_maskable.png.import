@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bj3w2am070fy7"
-path="res://.godot/imported/icon_512_maskable.png-9d9067a73eaad3b25f30c5ed6be0b22e.ctex"
+path="res://.godot/imported/icon_512_maskable.png-58cdb2a3fad119862d272860723d8db8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icon_512_maskable.png"
-dest_files=["res://.godot/imported/icon_512_maskable.png-9d9067a73eaad3b25f30c5ed6be0b22e.ctex"]
+source_file="res://public/icon_512_maskable.png"
+dest_files=["res://.godot/imported/icon_512_maskable.png-58cdb2a3fad119862d272860723d8db8.ctex"]
 
 [params]
 
