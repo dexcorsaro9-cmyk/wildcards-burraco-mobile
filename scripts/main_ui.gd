@@ -31,6 +31,7 @@ var rules_modal: Control
 var story_modal: Control
 var story_roster_list: VBoxContainer
 var online_modal: Control
+var club_info_modal: Control
 
 func _ready() -> void:
     _install_emoji_fallback_font()
@@ -176,6 +177,7 @@ func _apply_taverna_profile_style(card: Control, avatar: TextureRect, turn_ring:
     _build_rules_modal()
     _build_story_modal()
     _build_online_modal()
+    _enhance_club_screen()
 
     # Process command line testing flags
     _check_cli_args()
@@ -508,7 +510,7 @@ func _build_rules_modal() -> void:
     rules_modal.add_child(center_c)
 
     var panel = Panel.new()
-    panel.custom_minimum_size = Vector2(680, 920)
+    panel.custom_minimum_size = Vector2(660, 1160)
     var psb = StyleBoxFlat.new()
     psb.bg_color = Color(0.06, 0.09, 0.12, 0.98)
     psb.border_color = Color(0.96, 0.82, 0.25, 1.0)
@@ -524,15 +526,17 @@ func _build_rules_modal() -> void:
 
     var title = Label.new()
     title.text = "📜 REGOLAMENTO UFFICIALE F.I.BUR"
-    title.position = Vector2(30, 18)
-    title.add_theme_font_size_override("font_size", 22)
+    title.position = Vector2(24, 18)
+    title.size = Vector2(490, 30)
+    title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    title.add_theme_font_size_override("font_size", 19)
     title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35, 1.0))
     panel.add_child(title)
 
     var close_btn = Button.new()
     close_btn.text = "✖ CHIUDI"
     close_btn.custom_minimum_size = Vector2(100, 36)
-    close_btn.position = Vector2(980 - 130, 16)
+    close_btn.position = Vector2(660 - 116, 16)
     var csb = StyleBoxFlat.new()
     csb.bg_color = Color(0.22, 0.1, 0.12, 0.9)
     csb.border_color = Color(0.9, 0.4, 0.4, 1.0)
@@ -542,11 +546,16 @@ func _build_rules_modal() -> void:
     close_btn.pressed.connect(func(): rules_modal.visible = false)
     panel.add_child(close_btn)
 
-    var cards_box = HBoxContainer.new()
-    cards_box.position = Vector2(25, 70)
-    cards_box.size = Vector2(640, 800)
+    var scroll = ScrollContainer.new()
+    scroll.position = Vector2(15, 66)
+    scroll.size = Vector2(630, 1080)
+    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    panel.add_child(scroll)
+
+    var cards_box = VBoxContainer.new()
+    cards_box.custom_minimum_size = Vector2(610, 0)
     cards_box.add_theme_constant_override("separation", 15)
-    panel.add_child(cards_box)
+    scroll.add_child(cards_box)
 
     var card1 = _create_rule_card(
         "🏆 I BURRACHI (7+ Carte)",
@@ -577,26 +586,27 @@ func _build_rules_modal() -> void:
     )
     cards_box.add_child(card3)
 
-func _create_rule_card(header_text: String, bg_col: Color, border_col: Color, body_text: String) -> Panel:
-    var p = Panel.new()
-    p.custom_minimum_size = Vector2(300, 480)
+func _create_rule_card(header_text: String, bg_col: Color, border_col: Color, body_text: String) -> Control:
+    var p = PanelContainer.new()
+    p.custom_minimum_size = Vector2(610, 0)
+    p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     var sb = StyleBoxFlat.new()
     sb.bg_color = bg_col
     sb.border_color = border_col
     sb.set_border_width_all(2)
     sb.set_corner_radius_all(8)
+    sb.content_margin_left = 15
+    sb.content_margin_top = 15
+    sb.content_margin_right = 15
+    sb.content_margin_bottom = 15
     p.add_theme_stylebox_override("panel", sb)
 
     var vbox = VBoxContainer.new()
-    vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-    vbox.offset_left = 15
-    vbox.offset_top = 15
-    vbox.offset_right = -15
-    vbox.offset_bottom = -15
     p.add_child(vbox)
 
     var hl = Label.new()
     hl.text = header_text
+    hl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     hl.add_theme_font_size_override("font_size", 16)
     hl.add_theme_color_override("font_color", border_col)
     vbox.add_child(hl)
@@ -839,6 +849,17 @@ func _build_online_modal() -> void:
         "I server multiplayer apriranno a breve!"
     )
 
+func _enhance_club_screen() -> void:
+    club_info_modal = _create_info_dialog(
+        "🏆 CARD CLUB ESCLUSIVO",
+        "🔮 IL TUO SALOTTO PRIVATO IN COSTRUZIONE\n\n" +
+        "Personalizza una stanza tutta tua in 3D isometrico: arredi, trofei e mobili sbloccabili giocando e vincendo partite.\n\n" +
+        "• Tavolo VIP smeraldo già pronto.\n" +
+        "• Trofeo d'oro, jukebox e chesterfield in arrivo.\n" +
+        "• Invita gli amici a visitare il tuo club!\n\n" +
+        "Le decorazioni sbloccabili apriranno a breve!"
+    )
+
 func _create_info_dialog(title_text: String, content_text: String) -> Control:
     var modal = Control.new()
     modal.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -916,6 +937,8 @@ func switch_tab(tab_idx: int) -> void:
     table_layer.visible = (tab_idx == 0)
     blind_box_layer.visible = (tab_idx == 1)
     club_layer.visible = (tab_idx == 2)
+    if tab_idx == 2 and club_info_modal != null:
+        club_info_modal.visible = true
     tab_table_btn.button_pressed = (tab_idx == 0)
     tab_box_btn.button_pressed = (tab_idx == 1)
     tab_club_btn.button_pressed = (tab_idx == 2)
@@ -1002,6 +1025,60 @@ func _check_cli_args() -> void:
                     img.save_png(p)
                     print("STORY_SCREENSHOT_SAVED: ", p)
                     get_tree().quit()
+                )
+            )
+
+        if "test-rules" in arg:
+            get_tree().create_timer(0.4).timeout.connect(func():
+                _show_rules_modal()
+                get_tree().create_timer(0.3).timeout.connect(func():
+                    var img = get_viewport().get_texture().get_image()
+                    var p = ProjectSettings.globalize_path("res://assets/rules_screenshot.png")
+                    img.save_png(p)
+                    print("RULES_SCREENSHOT_SAVED: ", p)
+                    get_tree().quit()
+                )
+            )
+
+        if "test-online" in arg:
+            get_tree().create_timer(0.4).timeout.connect(func():
+                _on_btn_online_pressed()
+                get_tree().create_timer(0.3).timeout.connect(func():
+                    var img = get_viewport().get_texture().get_image()
+                    var p = ProjectSettings.globalize_path("res://assets/online_screenshot.png")
+                    img.save_png(p)
+                    print("ONLINE_SCREENSHOT_SAVED: ", p)
+                    get_tree().quit()
+                )
+            )
+
+        if "test-blindbox" in arg:
+            get_tree().create_timer(0.3).timeout.connect(func():
+                _start_quick_game()
+                get_tree().create_timer(0.4).timeout.connect(func():
+                    switch_tab(1)
+                    get_tree().create_timer(0.3).timeout.connect(func():
+                        var img = get_viewport().get_texture().get_image()
+                        var p = ProjectSettings.globalize_path("res://assets/blindbox_screenshot.png")
+                        img.save_png(p)
+                        print("BLINDBOX_SCREENSHOT_SAVED: ", p)
+                        get_tree().quit()
+                    )
+                )
+            )
+
+        if "test-club" in arg:
+            get_tree().create_timer(0.3).timeout.connect(func():
+                _start_quick_game()
+                get_tree().create_timer(0.4).timeout.connect(func():
+                    switch_tab(2)
+                    get_tree().create_timer(0.3).timeout.connect(func():
+                        var img = get_viewport().get_texture().get_image()
+                        var p = ProjectSettings.globalize_path("res://assets/club_screenshot.png")
+                        img.save_png(p)
+                        print("CLUB_SCREENSHOT_SAVED: ", p)
+                        get_tree().quit()
+                    )
                 )
             )
 

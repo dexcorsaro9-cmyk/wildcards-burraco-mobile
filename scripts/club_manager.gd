@@ -35,8 +35,8 @@ func _draw() -> void:
     # 2. Tavolo VIP Smeraldo Centrale
     if unlocked_furniture.table_vip:
         var t_center = center + Vector2(0, -10)
-        draw_circle(t_center, 40, Color(0.08, 0.35, 0.18)) # Feltro Smeraldo
         draw_circle(t_center, 42, Color(0.85, 0.65, 0.15)) # Bordo Ottone
+        draw_circle(t_center, 38, Color(0.08, 0.35, 0.18)) # Feltro Smeraldo
 
     # 3. Trofeo d'Oro Burraco (se sbloccato)
     if unlocked_furniture.trophy_gold:
