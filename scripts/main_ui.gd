@@ -426,6 +426,9 @@ func _start_quick_game() -> void:
         blind_box_layer.visible = false
         club_layer.visible = false
         switch_tab(0)
+        var mgr = get_node_or_null("/root/Main/BurracoGameManager")
+        if mgr and mgr.has_method("start_quick_match"):
+            mgr.start_quick_match()
     )
 
 func _return_to_main_menu() -> void:

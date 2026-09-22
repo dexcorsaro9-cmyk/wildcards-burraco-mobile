@@ -153,6 +153,16 @@ func start_campaign_match(villain: CampaignVillain) -> void:
     current_mode = GameMode.WILD
     start_new_match()
 
+## Avvia "Burraco Veloce" con un'IA a difficoltà standard, azzerando qualsiasi
+## stato lasciato da una precedente sfida della Campagna (difficoltà/tratto del
+## villain, ricompense e flag di vittoria del villain), altrimenti quello stato
+## resterebbe attivo per il resto della sessione anche fuori dalla Storia.
+func start_quick_match() -> void:
+    active_villain = null
+    ai.difficulty = 0.5
+    ai.five_freeze_priority = false
+    start_new_match()
+
 var discard_inspector_modal: Control = null
 var inspector_cards_box: GridContainer = null
 var inspector_title: Label = null
