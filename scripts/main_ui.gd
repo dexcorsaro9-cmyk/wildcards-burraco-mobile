@@ -50,14 +50,87 @@ func _ready() -> void:
     if o_card and o_card is TextureRect:
         o_card.texture = back_tex
 
-    # Avatars Setup (Top Store Style)
-    var opp_avatar = get_node_or_null("TableLayer/OpponentProfileCard/AvatarOpp")
-    if opp_avatar and opp_avatar is TextureRect:
-        opp_avatar.texture = AssetLoader.get_tex("res://assets/avatar_opponent.png")
+    # Avatars Setup (Top Store Style) — cornice in legno intagliato + ritratto grande
+    var profile_cards: Array = [
+        {
+            "card": get_node_or_null("TableLayer/OpponentProfileCard"),
+            "avatar": get_node_or_null("TableLayer/OpponentProfileCard/AvatarOpp"),
+            "ring": get_node_or_null("TableLayer/OpponentProfileCard/TurnRingOpp"),
+            "info": get_node_or_null("TableLayer/OpponentProfileCard/OppInfoVBox"),
+            "avatar_path": "res://assets/avatar_opponent.png",
+            "frame_size": 96.0,
+        },
+        {
+            "card": get_node_or_null("TableLayer/PlayerProfileCard"),
+            "avatar": get_node_or_null("TableLayer/PlayerProfileCard/AvatarPlayer"),
+            "ring": get_node_or_null("TableLayer/PlayerProfileCard/TurnRingPlayer"),
+            "info": get_node_or_null("TableLayer/PlayerProfileCard/PlayerNameLabel"),
+            "avatar_path": "res://assets/avatar_player.png",
+            "frame_size": 64.0,
+        },
+    ]
+    for entry in profile_cards:
+        _apply_taverna_profile_style(entry.card, entry.avatar, entry.ring, entry.info, entry.avatar_path, entry.frame_size)
 
-    var player_avatar = get_node_or_null("TableLayer/PlayerProfileCard/AvatarPlayer")
-    if player_avatar and player_avatar is TextureRect:
-        player_avatar.texture = AssetLoader.get_tex("res://assets/avatar_player.png")
+# Frazione della finestra interna di avatar_frame_wood.jpg (stimata a occhio sull'immagine
+# generata): la cornice intagliata non ha un buco trasparente, quindi il ritratto va
+# disegnato SOPRA riempiendo esattamente quella finestra, mentre il legno resta visibile
+# intorno come bordo.
+const AVATAR_WINDOW_LEFT_FRAC: float = 0.19
+const AVATAR_WINDOW_TOP_FRAC: float = 0.21
+const AVATAR_WINDOW_WIDTH_FRAC: float = 0.63
+const AVATAR_WINDOW_HEIGHT_FRAC: float = 0.59
+
+func _apply_taverna_profile_style(card: Control, avatar: TextureRect, turn_ring: Control, info_control: Control, avatar_path: String, frame_size: float) -> void:
+    if card == null or avatar == null:
+        return
+
+    var frame_tex = AssetLoader.get_tex("res://assets/avatar_frame_wood.jpg")
+    if frame_tex == null:
+        avatar.texture = AssetLoader.get_tex(avatar_path)
+        return
+
+    # Ordine di disegno via z_index (mai move_child: riordinare i figli qui
+    # innesca una ri-registrazione dei segnali dei pulsanti dell'header —
+    # osservato empiricamente su Godot 4.3, evitato del tutto con z_index).
+    var frame_rect = TextureRect.new()
+    frame_rect.texture = frame_tex
+    frame_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    frame_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    frame_rect.position = Vector2.ZERO
+    frame_rect.size = Vector2(frame_size, frame_size)
+    frame_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    frame_rect.z_index = -3
+    card.add_child(frame_rect)
+
+    var win_pos = Vector2(frame_size * AVATAR_WINDOW_LEFT_FRAC, frame_size * AVATAR_WINDOW_TOP_FRAC)
+    var win_size = Vector2(frame_size * AVATAR_WINDOW_WIDTH_FRAC, frame_size * AVATAR_WINDOW_HEIGHT_FRAC)
+
+    avatar.position = win_pos
+    avatar.size = win_size
+    avatar.texture = AssetLoader.get_tex(avatar_path)
+    avatar.z_index = -2
+
+    if turn_ring:
+        turn_ring.position = Vector2.ZERO
+        turn_ring.size = Vector2(frame_size, frame_size)
+        turn_ring.z_index = -1
+
+    if info_control:
+        info_control.position.x = frame_size + 14.0
+
+        var plate_tex = AssetLoader.get_tex("res://assets/nameplate_wood_iso.png")
+        if plate_tex != null:
+            var plate = TextureRect.new()
+            plate.texture = plate_tex
+            plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+            plate.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+            plate.position = info_control.position + Vector2(-10.0, -6.0)
+            plate.size = info_control.size + Vector2(20.0, 12.0)
+            plate.modulate = Color(1.0, 1.0, 1.0, 0.55)
+            plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+            plate.z_index = -1
+            card.add_child(plate)
 
     # Quick Chat System
     var chat_btn = get_node_or_null("TableLayer/QuickChatBtn")
