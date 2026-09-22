@@ -166,7 +166,9 @@ func _build_main_menu() -> void:
     menu_logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     menu_logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     menu_logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_transparent.png")
+    menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_splash.png")
+    if menu_logo.texture == null:
+        menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_transparent.png")
     if menu_logo.texture == null:
         menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_aaa.png")
     main_vbox.add_child(menu_logo)
@@ -615,9 +617,22 @@ func _refresh_story_roster() -> void:
         var v: CampaignVillain = roster[i]
         var is_defeated = defeated.has(v.id)
         var is_unlocked = i == 0 or defeated.has(roster[i - 1].id)
-        story_roster_list.add_child(_create_villain_row(v, is_unlocked, is_defeated))
+        story_roster_list.add_child(_create_villain_row(v, is_unlocked, is_defeated, i))
 
-func _create_villain_row(v: CampaignVillain, is_unlocked: bool, is_defeated: bool) -> Control:
+# Icone per i villain non-boss (l'Apex Dragon è riservato al Signore della Taverna),
+# assegnate a rotazione così il roster non mostra la stessa faccia per tutti.
+const VILLAIN_AVATARS: Array[String] = [
+    "res://assets/creature_solar_sphinx.png",
+    "res://assets/suit_hearts.png",
+    "res://assets/creature_cyber_pinella.png",
+    "res://assets/suit_clubs.png",
+    "res://assets/creature_neon_chimera.png",
+    "res://assets/suit_diamonds.png",
+    "res://assets/suit_spades.png",
+    "res://assets/suit_joker.png",
+]
+
+func _create_villain_row(v: CampaignVillain, is_unlocked: bool, is_defeated: bool, avatar_index: int) -> Control:
     var row = Panel.new()
     row.custom_minimum_size = Vector2(0, 92)
     row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -643,7 +658,10 @@ func _create_villain_row(v: CampaignVillain, is_unlocked: bool, is_defeated: boo
     avatar.custom_minimum_size = Vector2(56, 56)
     avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    avatar.texture = AssetLoader.get_tex("res://assets/creature_apex_dragon.png" if v.is_boss else "res://assets/creature_neon_chimera.png")
+    if v.is_boss:
+        avatar.texture = AssetLoader.get_tex("res://assets/creature_apex_dragon.png")
+    else:
+        avatar.texture = AssetLoader.get_tex(VILLAIN_AVATARS[avatar_index % VILLAIN_AVATARS.size()])
     if not is_unlocked:
         avatar.modulate = Color(1, 1, 1, 0.35)
     hbox.add_child(avatar)
@@ -857,6 +875,19 @@ func _check_cli_args() -> void:
                 _start_quick_game()
             )
 
+        if "test-campaign" in arg:
+            get_tree().create_timer(0.3).timeout.connect(func():
+                var roster = CampaignVillain.get_world_1_roster()
+                _start_campaign_fight(roster[0])
+                get_tree().create_timer(0.6).timeout.connect(func():
+                    var img = get_viewport().get_texture().get_image()
+                    var p = ProjectSettings.globalize_path("res://assets/campaign_screenshot.png")
+                    img.save_png(p)
+                    print("CAMPAIGN_SCREENSHOT_SAVED: ", p)
+                    get_tree().quit()
+                )
+            )
+
         if "test-menu" in arg:
             get_tree().create_timer(0.4).timeout.connect(func():
                 var img = get_viewport().get_texture().get_image()
@@ -864,6 +895,18 @@ func _check_cli_args() -> void:
                 img.save_png(p)
                 print("MENU_SCREENSHOT_SAVED: ", p)
                 get_tree().quit()
+            )
+
+        if "test-story" in arg:
+            get_tree().create_timer(0.4).timeout.connect(func():
+                _on_btn_story_pressed()
+                get_tree().create_timer(0.3).timeout.connect(func():
+                    var img = get_viewport().get_texture().get_image()
+                    var p = ProjectSettings.globalize_path("res://assets/story_screenshot.png")
+                    img.save_png(p)
+                    print("STORY_SCREENSHOT_SAVED: ", p)
+                    get_tree().quit()
+                )
             )
 
         if "screenshot" in arg:

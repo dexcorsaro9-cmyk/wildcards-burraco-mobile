@@ -154,7 +154,7 @@ func start_campaign_match(villain: CampaignVillain) -> void:
     start_new_match()
 
 var discard_inspector_modal: Control = null
-var inspector_cards_box: HBoxContainer = null
+var inspector_cards_box: GridContainer = null
 var inspector_title: Label = null
 var inspector_take_btn: Button = null
 
