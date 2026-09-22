@@ -36,7 +36,9 @@ func _ready() -> void:
     if bg_texture_rect:
         bg_texture_rect.texture = AssetLoader.get_tex("res://assets/table_felt_luxury.png")
 
-    var back_tex = AssetLoader.get_tex("res://assets/card_back_luxury.png")
+    var back_tex = AssetLoader.get_tex("res://assets/card_back_taverna.png")
+    if back_tex == null:
+        back_tex = AssetLoader.get_tex("res://assets/card_back_luxury.png")
     if stock_btn is TextureButton:
         stock_btn.texture_normal = back_tex
 

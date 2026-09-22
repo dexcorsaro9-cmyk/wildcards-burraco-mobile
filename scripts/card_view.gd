@@ -165,7 +165,9 @@ func _draw() -> void:
         draw_rect(glow_rect, Color(1.0, 0.82, 0.25, 0.7), false, 4.0)
 
     if not is_face_up:
-        var back_tex = AssetLoader.get_tex("res://assets/card_back_luxury.png")
+        var back_tex = AssetLoader.get_tex("res://assets/card_back_taverna.png")
+        if back_tex == null:
+            back_tex = AssetLoader.get_tex("res://assets/card_back_luxury.png")
         if back_tex:
             draw_texture_rect(back_tex, rect, false)
         return
