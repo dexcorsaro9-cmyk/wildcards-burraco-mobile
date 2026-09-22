@@ -5,7 +5,7 @@
   "name": "WILD-CARDS: Burraco Digital-Tattile",
   "short_name": "Burraco",
   "description": "Burraco Digital-Tattile con fisica Balatro e carte 3D collezionabili",
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
   "display_override": ["standalone", "fullscreen"],
   "orientation": "portrait",
