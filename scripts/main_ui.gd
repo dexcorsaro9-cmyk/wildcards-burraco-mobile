@@ -2,6 +2,7 @@ class_name MainUI
 extends CanvasLayer
 
 const AssetLoader = preload("res://scripts/asset_loader.gd")
+const CampaignVillain = preload("res://scripts/campaign_data.gd")
 
 enum UIState { MAIN_MENU, IN_GAME }
 var current_state: UIState = UIState.MAIN_MENU
@@ -28,6 +29,7 @@ var menu_anim_time: float = 0.0
 # Modals
 var rules_modal: Control
 var story_modal: Control
+var story_roster_list: VBoxContainer
 var online_modal: Control
 
 func _ready() -> void:
@@ -356,8 +358,32 @@ func _on_btn_story_pressed() -> void:
     var audio = get_node_or_null("/root/AudioSynth")
     if audio and audio.has_method("play_menu_click"):
         audio.play_menu_click()
+    _refresh_story_roster()
     if story_modal:
         story_modal.visible = true
+
+## Chiude il roster e avvia una sfida della Storia contro il villain scelto.
+func _start_campaign_fight(villain: CampaignVillain) -> void:
+    var audio = get_node_or_null("/root/AudioSynth")
+    if audio and audio.has_method("play_menu_click"):
+        audio.play_menu_click()
+    if story_modal:
+        story_modal.visible = false
+
+    current_state = UIState.IN_GAME
+    var tw = create_tween()
+    tw.tween_property(main_menu_layer, "modulate:a", 0.0, 0.30)
+    tw.tween_callback(func():
+        main_menu_layer.visible = false
+        header_bar.visible = true
+        table_layer.visible = true
+        blind_box_layer.visible = false
+        club_layer.visible = false
+        switch_tab(0)
+        var mgr = get_node_or_null("/root/Main/BurracoGameManager")
+        if mgr and mgr.has_method("start_campaign_match"):
+            mgr.start_campaign_match(villain)
+    )
 
 func _on_btn_online_pressed() -> void:
     var audio = get_node_or_null("/root/AudioSynth")
@@ -500,18 +526,200 @@ func _create_rule_card(header_text: String, bg_col: Color, border_col: Color, bo
     return p
 
 # ==============================================================================
-# 4. STORY & ONLINE PREVIEW MODALS
+# 4. STORY ROSTER (MONDO 1: LA TAVERNA DEI QUATTRO ASSI) & ONLINE PREVIEW MODAL
 # ==============================================================================
 func _build_story_modal() -> void:
-    story_modal = _create_info_dialog(
-        "⚔️ CAMPAGNA STORIA: LA VIA DEI QUATTRO CLUB",
-        "🏆 ATTO I: LA TAVERNA DEI QUATTRO ASSI\n\n" +
-        "Benvenuto sfidante! La modalità Campagna ti porterà a scalare i Club di Burraco più prestigiosi del reame.\n\n" +
-        "• Sfida i Campioni dei Club per sbloccare carte leggendarie animate.\n" +
-        "• Apri le Blind Box esclusive ad ogni vittoria per completare il tuo mazzo.\n" +
-        "• Modificatori speciali di smazzata e abilità passive delle creature!\n\n" +
-        "Preparati: l'Atto I sarà sbloccato nella Stagione 1!"
-    )
+    story_modal = Control.new()
+    story_modal.name = "StoryModal"
+    story_modal.set_anchors_preset(Control.PRESET_FULL_RECT)
+    story_modal.z_index = 60
+    story_modal.visible = false
+    add_child(story_modal)
+
+    var bg = ColorRect.new()
+    bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+    bg.color = Color(0, 0, 0, 0.78)
+    story_modal.add_child(bg)
+
+    var center_c = CenterContainer.new()
+    center_c.set_anchors_preset(Control.PRESET_FULL_RECT)
+    story_modal.add_child(center_c)
+
+    var panel = Panel.new()
+    panel.custom_minimum_size = Vector2(660, 1080)
+    var psb = StyleBoxFlat.new()
+    psb.bg_color = Color(0.07, 0.06, 0.10, 0.98)
+    psb.border_color = Color(0.96, 0.82, 0.25, 1.0)
+    psb.set_border_width_all(3)
+    psb.set_corner_radius_all(14)
+    psb.shadow_size = 14
+    psb.shadow_color = Color(0, 0, 0, 0.65)
+    panel.add_theme_stylebox_override("panel", psb)
+    center_c.add_child(panel)
+
+    var title = Label.new()
+    title.text = "⚔️ MONDO 1: LA TAVERNA DEI QUATTRO ASSI"
+    title.position = Vector2(24, 16)
+    title.size = Vector2(660 - 130, 26)
+    title.add_theme_font_size_override("font_size", 17)
+    title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35, 1.0))
+    panel.add_child(title)
+
+    var close_btn = Button.new()
+    close_btn.text = "✖"
+    close_btn.custom_minimum_size = Vector2(40, 36)
+    close_btn.position = Vector2(660 - 24 - 40, 14)
+    var csb = StyleBoxFlat.new()
+    csb.bg_color = Color(0.22, 0.1, 0.12, 0.9)
+    csb.border_color = Color(0.9, 0.4, 0.4, 1.0)
+    csb.set_border_width_all(2)
+    csb.set_corner_radius_all(6)
+    close_btn.add_theme_stylebox_override("normal", csb)
+    close_btn.pressed.connect(func(): story_modal.visible = false)
+    panel.add_child(close_btn)
+
+    var sub = Label.new()
+    sub.text = "Sfida i 9 avventori e il Signore della Taverna, nell'ordine. Ogni vittoria sblocca il prossimo."
+    sub.position = Vector2(24, 46)
+    sub.size = Vector2(660 - 48, 32)
+    sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    sub.add_theme_font_size_override("font_size", 12)
+    sub.add_theme_color_override("font_color", Color(0.8, 0.78, 0.85, 1.0))
+    panel.add_child(sub)
+
+    var scroll = ScrollContainer.new()
+    scroll.position = Vector2(20, 82)
+    scroll.size = Vector2(660 - 40, 1080 - 82 - 16)
+    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    panel.add_child(scroll)
+
+    story_roster_list = VBoxContainer.new()
+    story_roster_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    story_roster_list.add_theme_constant_override("separation", 10)
+    scroll.add_child(story_roster_list)
+
+## Ricostruisce la lista dei villain leggendo lo stato di sblocco dal game manager.
+func _refresh_story_roster() -> void:
+    if story_roster_list == null: return
+    for c in story_roster_list.get_children():
+        c.queue_free()
+
+    var mgr = get_node_or_null("/root/Main/BurracoGameManager")
+    var defeated: Dictionary = {}
+    if mgr and "defeated_villain_ids" in mgr:
+        defeated = mgr.defeated_villain_ids
+
+    var roster = CampaignVillain.get_world_1_roster()
+    for i in range(roster.size()):
+        var v: CampaignVillain = roster[i]
+        var is_defeated = defeated.has(v.id)
+        var is_unlocked = i == 0 or defeated.has(roster[i - 1].id)
+        story_roster_list.add_child(_create_villain_row(v, is_unlocked, is_defeated))
+
+func _create_villain_row(v: CampaignVillain, is_unlocked: bool, is_defeated: bool) -> Control:
+    var row = Panel.new()
+    row.custom_minimum_size = Vector2(0, 92)
+    row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    var rsb = StyleBoxFlat.new()
+    rsb.bg_color = Color(0.30, 0.10, 0.32, 0.95) if v.is_boss else Color(0.12, 0.13, 0.18, 0.92)
+    rsb.border_color = Color(0.96, 0.82, 0.25, 1.0) if v.is_boss else Color(0.32, 0.34, 0.42, 0.9)
+    rsb.set_border_width_all(2 if v.is_boss else 1)
+    rsb.set_corner_radius_all(10)
+    if not is_unlocked:
+        rsb.bg_color = rsb.bg_color.darkened(0.55)
+    row.add_theme_stylebox_override("panel", rsb)
+
+    var hbox = HBoxContainer.new()
+    hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+    hbox.offset_left = 12
+    hbox.offset_right = -12
+    hbox.offset_top = 8
+    hbox.offset_bottom = -8
+    hbox.add_theme_constant_override("separation", 12)
+    row.add_child(hbox)
+
+    var avatar = TextureRect.new()
+    avatar.custom_minimum_size = Vector2(56, 56)
+    avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    avatar.texture = AssetLoader.get_tex("res://assets/creature_apex_dragon.png" if v.is_boss else "res://assets/creature_neon_chimera.png")
+    if not is_unlocked:
+        avatar.modulate = Color(1, 1, 1, 0.35)
+    hbox.add_child(avatar)
+
+    var vbox = VBoxContainer.new()
+    vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    vbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    vbox.add_theme_constant_override("separation", 2)
+    hbox.add_child(vbox)
+
+    var name_lbl = Label.new()
+    name_lbl.text = ("👑 " if v.is_boss else "") + v.display_name
+    name_lbl.add_theme_font_size_override("font_size", 15)
+    name_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3) if v.is_boss else Color(0.95, 0.95, 0.95))
+    vbox.add_child(name_lbl)
+
+    var epithet_lbl = Label.new()
+    epithet_lbl.text = v.epithet
+    epithet_lbl.add_theme_font_size_override("font_size", 11)
+    epithet_lbl.add_theme_color_override("font_color", Color(0.75, 0.72, 0.8))
+    vbox.add_child(epithet_lbl)
+
+    var flavor_lbl = Label.new()
+    flavor_lbl.text = v.flavor_line if is_unlocked else "Sconfiggi lo sfidante precedente per affrontarlo."
+    flavor_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    flavor_lbl.add_theme_font_size_override("font_size", 10)
+    flavor_lbl.add_theme_color_override("font_color", Color(0.68, 0.66, 0.72))
+    vbox.add_child(flavor_lbl)
+
+    var diff_lbl = Label.new()
+    var pips = int(round(v.difficulty * 10.0))
+    diff_lbl.text = "DIFFICOLTÀ  " + "●".repeat(pips) + "○".repeat(10 - pips)
+    diff_lbl.add_theme_font_size_override("font_size", 9)
+    diff_lbl.add_theme_color_override("font_color", Color(0.9, 0.5, 0.3) if pips >= 8 else Color(0.6, 0.75, 0.6))
+    vbox.add_child(diff_lbl)
+
+    var action_box = VBoxContainer.new()
+    action_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    action_box.custom_minimum_size = Vector2(96, 0)
+    action_box.add_theme_constant_override("separation", 4)
+    hbox.add_child(action_box)
+
+    if is_defeated:
+        var tag = Label.new()
+        tag.text = "✓ SUPERATO"
+        tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        tag.add_theme_font_size_override("font_size", 10)
+        tag.add_theme_color_override("font_color", Color(0.5, 0.9, 0.5))
+        action_box.add_child(tag)
+
+    var btn = Button.new()
+    btn.custom_minimum_size = Vector2(96, 36)
+    btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+    if is_unlocked:
+        btn.text = "RIVINCITA" if is_defeated else "SFIDA"
+        var bsb = StyleBoxFlat.new()
+        bsb.bg_color = Color(0.72, 0.42, 0.04, 0.98) if not v.is_boss else Color(0.55, 0.12, 0.58, 0.98)
+        bsb.border_color = Color(1.0, 0.88, 0.28, 1.0)
+        bsb.set_border_width_all(2)
+        bsb.set_corner_radius_all(8)
+        btn.add_theme_stylebox_override("normal", bsb)
+        btn.add_theme_font_size_override("font_size", 11)
+        btn.add_theme_color_override("font_color", Color(1.0, 0.96, 0.85))
+        btn.pressed.connect(func(): _start_campaign_fight(v))
+    else:
+        btn.text = "🔒"
+        btn.disabled = true
+        var lsb = StyleBoxFlat.new()
+        lsb.bg_color = Color(0.15, 0.15, 0.18, 0.8)
+        lsb.border_color = Color(0.35, 0.35, 0.4, 0.8)
+        lsb.set_border_width_all(1)
+        lsb.set_corner_radius_all(8)
+        btn.add_theme_stylebox_override("disabled", lsb)
+    action_box.add_child(btn)
+
+    return row
 
 func _build_online_modal() -> void:
     online_modal = _create_info_dialog(

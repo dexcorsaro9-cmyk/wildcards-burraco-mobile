@@ -23,6 +23,9 @@ var is_animating: bool = false
 
 # Modalità Storia: il villain attivo (null = partita rapida normale)
 var active_villain: CampaignVillain = null
+# Modalità Storia: id dei villain già battuti in questa sessione di gioco
+# (solo in memoria: non c'è ancora un salvataggio persistente tra sessioni)
+var defeated_villain_ids: Dictionary = {}
 
 var deck: BurracoDeck = BurracoDeck.new()
 var player_hand: Array[BurracoCardData] = []
@@ -747,6 +750,8 @@ func _run_ai_turn() -> void:
 
 func end_match(player_won: bool) -> void:
     match_over = true
+    if player_won and active_villain != null:
+        defeated_villain_ids[active_villain.id] = true
     var is_wild = (current_mode == GameMode.WILD)
 
     var p_bd = BurracoRules.calculate_player_breakdown(player_melds, player_hand, player_has_pozzetto, player_won, is_wild)
