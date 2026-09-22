@@ -1,4 +1,4 @@
-# 🃏 WILD-CARDS: Burraco Digital-Tattile (Mobile Edition) 📱
+# 🃏 Burraco Kingdom (Mobile Edition) 📱
 
 [![Godot Engine](https://img.shields.io/badge/Godot_Engine-4.3_Stable-478cbf?logo=godotengine&logoColor=white)](https://godotengine.org)
 [![Platform](https://img.shields.io/badge/Platform-Android_%7C_iOS_%7C_Mobile_Landscape-3ddc84?logo=android&logoColor=white)](https://godotengine.org)
@@ -69,7 +69,7 @@
 
 ### Esportazione iOS (Xcode Project)
 1. In **Progetto > Esporta...**, aggiungi il preset **iOS**.
-2. Configura il *Bundle Identifier* (es. com.wildcards.burraco).
+2. Configura il *Bundle Identifier* (es. com.burracokingdom.app).
 3. Esporta il progetto Xcode e aprilo su Mac per la firma e l'installazione su iPhone/iPad.
 
 ---
@@ -77,7 +77,7 @@
 ## 📁 Struttura del Progetto
 
 `	ext
-wildcards-godot/
+burraco-kingdom/
 ├── assets/                  # Texture feltro, forzieri, carte 3D ritagliate
 │   ├── cards/              # Tutte le 54 carte PNG ad alta risoluzione
 │   └── table_felt_luxury.png

@@ -306,7 +306,7 @@ func _build_main_menu() -> void:
     # 7. Subdued Golden Footer
     var footer = Label.new()
     footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    footer.text = "✦  WILD-CARDS BURRACO  •  EDIZIONE UFFICIALE F.I.BUR  •  v1.0.0 MOBILE  ✦"
+    footer.text = "✦  BURRACO KINGDOM  •  EDIZIONE UFFICIALE F.I.BUR  •  v1.0.0 MOBILE  ✦"
     footer.add_theme_font_size_override("font_size", 11)
     footer.add_theme_color_override("font_color", Color(1.0, 0.92, 0.72, 0.80))
     main_vbox.add_child(footer)
