@@ -6,6 +6,7 @@ const BurracoDeck = preload("res://scripts/deck.gd")
 const BurracoRules = preload("res://scripts/rules.gd")
 const BurracoAI = preload("res://scripts/ai_player.gd")
 const CardView = preload("res://scripts/card_view.gd")
+const CampaignVillain = preload("res://scripts/campaign_data.gd")
 
 
 enum Phase { DRAW, PLAY, DISCARD }
@@ -19,6 +20,9 @@ enum GameMode { CLASSIC, WILD }
 @export var match_over: bool = false
 var discard_frozen_turns: int = 0
 var is_animating: bool = false
+
+# Modalità Storia: il villain attivo (null = partita rapida normale)
+var active_villain: CampaignVillain = null
 
 var deck: BurracoDeck = BurracoDeck.new()
 var player_hand: Array[BurracoCardData] = []
@@ -136,6 +140,15 @@ func start_new_match() -> void:
 
     deck.initialize_and_deal(player_hand, opponent_hand)
     refresh_all_ui()
+
+## Avvia una sfida della modalità Storia contro un villain del roster (campaign_data.gd).
+## Applica il suo grado di difficoltà e il suo tratto firma all'IA prima di smazzare.
+func start_campaign_match(villain: CampaignVillain) -> void:
+    active_villain = villain
+    ai.difficulty = villain.difficulty
+    ai.five_freeze_priority = villain.five_freeze_priority
+    current_mode = GameMode.WILD
+    start_new_match()
 
 var discard_inspector_modal: Control = null
 var inspector_cards_box: HBoxContainer = null
@@ -707,8 +720,12 @@ func _run_ai_turn() -> void:
         opponent_hand.erase(to_discard)
         deck.discard(to_discard)
         if current_mode == GameMode.WILD and to_discard.rank == BurracoCardData.Rank.FIVE:
-            discard_frozen_turns = 1
-            set_banner("🛡️ L'avversario ha giocato lo SCUDO DEL PALADINO: Monte Scarti congelato!")
+            var freeze_turns = 2 if (active_villain != null and active_villain.extended_freeze) else 1
+            discard_frozen_turns = freeze_turns
+            if freeze_turns > 1:
+                set_banner("🛡️ %s ha giocato uno SCUDO DEL PALADINO POTENZIATO: Monte Scarti congelato per 2 turni!" % active_villain.display_name)
+            else:
+                set_banner("🛡️ L'avversario ha giocato lo SCUDO DEL PALADINO: Monte Scarti congelato!")
 
     if opponent_hand.is_empty():
         if not opponent_has_pozzetto:
@@ -741,8 +758,12 @@ func end_match(player_won: bool) -> void:
     var fiches_awarded = 0
     var coins_awarded = 0
     if player_won:
-        fiches_awarded = 250
-        coins_awarded = 50
+        if active_villain != null:
+            fiches_awarded = active_villain.reward_fiches
+            coins_awarded = active_villain.reward_coins
+        else:
+            fiches_awarded = 250
+            coins_awarded = 50
         if current_mode == GameMode.CLASSIC:
             var prestige_bonus = 0.0
             for m in player_melds:
@@ -787,6 +808,8 @@ func end_match(player_won: bool) -> void:
             text += "%-22s %+7d pt   %+7d pt\n" % ["TOTALE PARTITA:", p_score, o_score]
             if player_won:
                 text += "\n🎁 PREMI VITTORIA: +%d Fiches | +%d Gettoni!" % [fiches_awarded, coins_awarded]
+                if active_villain != null and active_villain.unlock_card_skin != "":
+                    text += "\n✨ FINITURA CARTA SBLOCCATA: %s!" % active_villain.unlock_card_skin
             score_label.text = text
 
 func refresh_all_ui() -> void:
