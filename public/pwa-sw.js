@@ -1,6 +1,6 @@
 // Service Worker PWA: cache dell'app-shell per installazione e avvio offline.
 // Bump CACHE_NAME ad ogni nuovo export web per invalidare la cache dei client.
-const CACHE_NAME = 'wildcards-burraco-pwa-v1';
+const CACHE_NAME = 'wildcards-burraco-pwa-v2';
 const PRECACHE_URLS = [
 	'./',
 	'./index.html',
@@ -11,7 +11,9 @@ const PRECACHE_URLS = [
 	'./manifest.json',
 	'./favicon.ico',
 	'./icon_192.png',
-	'./icon_512.png'
+	'./icon_192_maskable.png',
+	'./icon_512.png',
+	'./icon_512_maskable.png'
 ];
 
 self.addEventListener('install', (event) => {
