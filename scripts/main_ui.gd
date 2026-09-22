@@ -200,6 +200,8 @@ func _process(delta: float) -> void:
 # 1. MAIN MENU (MEDIEVAL TAVERN PIXAR/CLASH + 4 GRANDI BOTTONI IN GRIGLIA)
 # ==============================================================================
 func _build_main_menu() -> void:
+    if main_menu_layer != null:
+        return
     main_menu_layer = Control.new()
     main_menu_layer.name = "MainMenuLayer"
     main_menu_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -237,15 +239,11 @@ func _build_main_menu() -> void:
 
     # 5. Top 3D Pixar/Clash Logo (Clean, centered, floating, majestic in portrait)
     menu_logo = TextureRect.new()
-    menu_logo.custom_minimum_size = Vector2(580, 180)
+    menu_logo.custom_minimum_size = Vector2(560, 244)
     menu_logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     menu_logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     menu_logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_splash.png")
-    if menu_logo.texture == null:
-        menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_transparent.png")
-    if menu_logo.texture == null:
-        menu_logo.texture = AssetLoader.get_tex("res://assets/logo_wildcards_aaa.png")
+    menu_logo.texture = AssetLoader.get_tex("res://assets/logo_burraco_kingdom_menu.png")
     main_vbox.add_child(menu_logo)
 
     # 6. 4 GRANDI BOTTONI VERTICALI (Larghi 640px, Alti 135px, distanziati per riempire lo schermo)
@@ -951,6 +949,13 @@ func _check_cli_args() -> void:
         if "test-game" in arg:
             get_tree().create_timer(0.3).timeout.connect(func():
                 _start_quick_game()
+                get_tree().create_timer(0.6).timeout.connect(func():
+                    var img = get_viewport().get_texture().get_image()
+                    var p = ProjectSettings.globalize_path("res://assets/game_screenshot.png")
+                    img.save_png(p)
+                    print("GAME_SCREENSHOT_SAVED: ", p)
+                    get_tree().quit()
+                )
             )
 
         if "test-campaign" in arg:
