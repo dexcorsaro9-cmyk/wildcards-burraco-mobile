@@ -33,6 +33,7 @@ var story_roster_list: VBoxContainer
 var online_modal: Control
 
 func _ready() -> void:
+    _install_emoji_fallback_font()
     if bg_texture_rect:
         bg_texture_rect.texture = AssetLoader.get_tex("res://assets/table_felt_luxury.png")
 
@@ -178,6 +179,18 @@ func _apply_taverna_profile_style(card: Control, avatar: TextureRect, turn_ring:
 
     # Process command line testing flags
     _check_cli_args()
+
+func _install_emoji_fallback_font() -> void:
+    var emoji_font = load("res://assets/fonts/emoji_subset.ttf")
+    if emoji_font == null or not (emoji_font is Font):
+        return
+    var base_font = ThemeDB.fallback_font
+    if base_font == null:
+        return
+    var current_fallbacks: Array = base_font.fallbacks.duplicate()
+    if not current_fallbacks.has(emoji_font):
+        current_fallbacks.append(emoji_font)
+        base_font.fallbacks = current_fallbacks
 
 func _process(delta: float) -> void:
     menu_anim_time += delta

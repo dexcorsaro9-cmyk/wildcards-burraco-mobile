@@ -35,7 +35,7 @@ body {
 	background-color: #05070a;
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: flex-end;
 	align-items: center;
 	gap: 18px;
 	visibility: hidden;
@@ -43,12 +43,12 @@ body {
 }
 
 #status-splash {
-	width: 82%;
-	max-width: 780px;
-	max-height: 65vh;
-	object-fit: contain;
-	border-radius: 20px;
-	filter: drop-shadow(0 12px 36px rgba(0, 0, 0, 0.85));
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 	margin: 0;
 }
 
@@ -57,12 +57,14 @@ body {
 }
 
 #status-progress {
+	position: relative;
+	z-index: 1;
 	width: 45%;
 	max-width: 380px;
 	height: 10px;
 	border-radius: 5px;
 	accent-color: #f5c83b;
-	margin: 0;
+	margin: 0 0 48px 0;
 }
 
 #status-notice {
@@ -101,7 +103,7 @@ body {
 
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":39673520,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":37940688,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
