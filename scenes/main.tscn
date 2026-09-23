@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b7y2n5qwc8vld"]
+[gd_scene load_steps=9 format=3 uid="uid://b7y2n5qwc8vld"]
 
 [ext_resource type="Script" path="res://scripts/audio_synth.gd" id="1_audio"]
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="2_mgr"]
@@ -21,20 +21,6 @@ corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_table_frame"]
-bg_color = Color(0, 0, 0, 0)
-border_width_left = 8
-border_width_top = 8
-border_width_right = 8
-border_width_bottom = 8
-border_color = Color(0.96, 0.82, 0.25, 0.9)
-corner_radius_top_left = 22
-corner_radius_top_right = 22
-corner_radius_bottom_right = 22
-corner_radius_bottom_left = 22
-shadow_size = 14
-shadow_color = Color(0.96, 0.82, 0.25, 0.18)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
 bg_color = Color(0.08, 0.12, 0.18, 0.95)
@@ -143,19 +129,6 @@ grow_vertical = 2
 
 expand_mode = 1
 stretch_mode = 6
-
-[node name="TableFrame" type="Panel" parent="UI"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 64.0
-offset_right = -8.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_table_frame")
 
 [node name="HeaderBar" type="Panel" parent="UI"]
 custom_minimum_size = Vector2(0, 56)
@@ -369,9 +342,9 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 20.0
-offset_top = 180.0
+offset_top = 245.0
 offset_right = -20.0
-offset_bottom = 275.0
+offset_bottom = 380.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -381,9 +354,9 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 20.0
-offset_top = 280.0
+offset_top = 395.0
 offset_right = -20.0
-offset_bottom = 540.0
+offset_bottom = 620.0
 grow_horizontal = 2
 
 [node name="StockShadow" type="ColorRect" parent="UI/TableLayer/CenterArea"]
@@ -623,9 +596,9 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 20.0
-offset_top = 560.0
+offset_top = 635.0
 offset_right = -20.0
-offset_bottom = 680.0
+offset_bottom = 825.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -634,9 +607,9 @@ alignment = 1
 layout_mode = 1
 anchors_preset = 0
 offset_left = 20.0
-offset_top = 690.0
+offset_top = 840.0
 offset_right = 250.0
-offset_bottom = 745.0
+offset_bottom = 895.0
 
 [node name="AvatarPlayer" type="TextureRect" parent="UI/TableLayer/PlayerProfileCard"]
 layout_mode = 0
@@ -668,9 +641,9 @@ text = "Tu (Campione)"
 visible = false
 layout_mode = 0
 offset_left = 65.0
-offset_top = 644.0
+offset_top = 794.0
 offset_right = 300.0
-offset_bottom = 680.0
+offset_bottom = 830.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_bubble")
 
 [node name="SpeechBubblePlayerLabel" type="Label" parent="UI/TableLayer/SpeechBubblePlayer"]
@@ -685,9 +658,9 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
 offset_left = 650.0
-offset_top = 690.0
+offset_top = 840.0
 offset_right = 700.0
-offset_bottom = 740.0
+offset_bottom = 890.0
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_gold_btn")
 theme_override_font_sizes/font_size = 20
@@ -698,9 +671,9 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 20.0
-offset_top = 760.0
+offset_top = 910.0
 offset_right = -20.0
-offset_bottom = 818.0
+offset_bottom = 968.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -730,9 +703,9 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 10.0
-offset_top = 838.0
+offset_top = 988.0
 offset_right = -10.0
-offset_bottom = 1100.0
+offset_bottom = 1200.0
 grow_horizontal = 2
 theme_override_constants/separation = -31
 alignment = 1
