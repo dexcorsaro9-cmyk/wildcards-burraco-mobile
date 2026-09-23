@@ -77,6 +77,54 @@ func _ready() -> void:
     for entry in profile_cards:
         _apply_taverna_profile_style(entry.card, entry.avatar, entry.ring, entry.info, entry.avatar_path, entry.frame_size)
 
+    # Quick Chat System
+    var chat_btn = get_node_or_null("TableLayer/QuickChatBtn")
+    var chat_modal = get_node_or_null("TableLayer/ChatMenuModal")
+    if chat_btn and chat_modal:
+        chat_btn.pressed.connect(func():
+            chat_modal.visible = not chat_modal.visible
+        )
+        for i in range(1, 7):
+            var btn = chat_modal.get_node_or_null("ChatList/ChatBtn%d" % i)
+            if btn:
+                btn.pressed.connect(func():
+                    chat_modal.visible = false
+                    show_player_speech(btn.text)
+                    var mgr = get_node_or_null("/root/Main/BurracoGameManager")
+                    if mgr and mgr.has_method("on_player_sent_chat"):
+                        mgr.on_player_sent_chat(btn.text)
+                )
+
+    # Navigation setup
+    if tab_home_btn:
+        tab_home_btn.pressed.connect(_return_to_main_menu)
+    tab_table_btn.pressed.connect(func(): switch_tab(0))
+    tab_box_btn.pressed.connect(func(): switch_tab(1))
+    tab_club_btn.pressed.connect(func(): switch_tab(2))
+
+    if sound_btn:
+        sound_btn.pressed.connect(func():
+            var audio = get_node_or_null("/root/AudioSynth")
+            if audio:
+                var is_muted = audio.toggle_mute()
+                sound_btn.text = "🔇" if is_muted else "🔊"
+        )
+
+    # Initial state: hide in-game layers and open directly on the Home Screen!
+    header_bar.visible = false
+    table_layer.visible = false
+    blind_box_layer.visible = false
+    club_layer.visible = false
+
+    _build_main_menu()
+    _build_rules_modal()
+    _build_story_modal()
+    _build_online_modal()
+    _enhance_club_screen()
+
+    # Process command line testing flags
+    _check_cli_args()
+
 # Frazione della finestra interna di avatar_frame_wood.jpg (stimata a occhio sull'immagine
 # generata): la cornice intagliata non ha un buco trasparente, quindi il ritratto va
 # disegnato SOPRA riempiendo esattamente quella finestra, mentre il legno resta visibile
@@ -136,54 +184,6 @@ func _apply_taverna_profile_style(card: Control, avatar: TextureRect, turn_ring:
             plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
             plate.z_index = -1
             card.add_child(plate)
-
-    # Quick Chat System
-    var chat_btn = get_node_or_null("TableLayer/QuickChatBtn")
-    var chat_modal = get_node_or_null("TableLayer/ChatMenuModal")
-    if chat_btn and chat_modal:
-        chat_btn.pressed.connect(func():
-            chat_modal.visible = not chat_modal.visible
-        )
-        for i in range(1, 7):
-            var btn = chat_modal.get_node_or_null("ChatList/ChatBtn%d" % i)
-            if btn:
-                btn.pressed.connect(func():
-                    chat_modal.visible = false
-                    show_player_speech(btn.text)
-                    var mgr = get_node_or_null("/root/Main/BurracoGameManager")
-                    if mgr and mgr.has_method("on_player_sent_chat"):
-                        mgr.on_player_sent_chat(btn.text)
-                )
-
-    # Navigation setup
-    if tab_home_btn:
-        tab_home_btn.pressed.connect(_return_to_main_menu)
-    tab_table_btn.pressed.connect(func(): switch_tab(0))
-    tab_box_btn.pressed.connect(func(): switch_tab(1))
-    tab_club_btn.pressed.connect(func(): switch_tab(2))
-
-    if sound_btn:
-        sound_btn.pressed.connect(func():
-            var audio = get_node_or_null("/root/AudioSynth")
-            if audio:
-                var is_muted = audio.toggle_mute()
-                sound_btn.text = "🔇" if is_muted else "🔊"
-        )
-
-    # Initial state: hide in-game layers and open directly on the Home Screen!
-    header_bar.visible = false
-    table_layer.visible = false
-    blind_box_layer.visible = false
-    club_layer.visible = false
-
-    _build_main_menu()
-    _build_rules_modal()
-    _build_story_modal()
-    _build_online_modal()
-    _enhance_club_screen()
-
-    # Process command line testing flags
-    _check_cli_args()
 
 func _install_emoji_fallback_font() -> void:
     var emoji_font = load("res://assets/fonts/emoji_subset.ttf")

@@ -344,7 +344,7 @@ anchor_right = 1.0
 offset_left = 20.0
 offset_top = 180.0
 offset_right = -20.0
-offset_bottom = 310.0
+offset_bottom = 265.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -354,26 +354,26 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 20.0
-offset_top = 325.0
+offset_top = 280.0
 offset_right = -20.0
-offset_bottom = 525.0
+offset_bottom = 540.0
 grow_horizontal = 2
 
 [node name="StockShadow" type="ColorRect" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 9.0
-offset_top = 11.0
+offset_top = 46.0
 offset_right = 79.0
-offset_bottom = 115.0
+offset_bottom = 150.0
 color = Color(0, 0, 0, 0.45)
 
 [node name="StockButton" type="TextureButton" parent="UI/TableLayer/CenterArea"]
 custom_minimum_size = Vector2(70, 104)
 layout_mode = 0
 offset_left = 6.0
-offset_top = 8.0
+offset_top = 43.0
 offset_right = 76.0
-offset_bottom = 112.0
+offset_bottom = 147.0
 mouse_default_cursor_shape = 2
 ignore_texture_size = true
 stretch_mode = 5
@@ -381,9 +381,9 @@ stretch_mode = 5
 [node name="StockLabel" type="Label" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 2.0
-offset_top = 116.0
+offset_top = 151.0
 offset_right = 80.0
-offset_bottom = 148.0
+offset_bottom = 183.0
 theme_override_colors/font_color = Color(0.96, 0.82, 0.22, 1)
 theme_override_font_sizes/font_size = 11
 text = "TALLONE"
@@ -392,9 +392,9 @@ horizontal_alignment = 1
 [node name="PozzettoPlayer" type="Control" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 86.0
-offset_top = 8.0
+offset_top = 43.0
 offset_right = 156.0
-offset_bottom = 112.0
+offset_bottom = 147.0
 
 [node name="Shadow" type="ColorRect" parent="UI/TableLayer/CenterArea/PozzettoPlayer"]
 layout_mode = 0
@@ -464,9 +464,9 @@ mouse_default_cursor_shape = 2
 [node name="PozzettoPlayerLabel" type="Label" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 82.0
-offset_top = 116.0
+offset_top = 151.0
 offset_right = 160.0
-offset_bottom = 148.0
+offset_bottom = 183.0
 theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
 theme_override_font_sizes/font_size = 11
 text = "TUO POZZ.\n(11)"
@@ -475,9 +475,9 @@ horizontal_alignment = 1
 [node name="PozzettoOpponent" type="Control" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 166.0
-offset_top = 8.0
+offset_top = 43.0
 offset_right = 236.0
-offset_bottom = 112.0
+offset_bottom = 147.0
 
 [node name="Shadow" type="ColorRect" parent="UI/TableLayer/CenterArea/PozzettoOpponent"]
 layout_mode = 0
@@ -547,9 +547,9 @@ mouse_default_cursor_shape = 2
 [node name="PozzettoOpponentLabel" type="Label" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 162.0
-offset_top = 116.0
+offset_top = 151.0
 offset_right = 240.0
-offset_bottom = 148.0
+offset_bottom = 183.0
 theme_override_colors/font_color = Color(0.85, 0.85, 0.88, 1)
 theme_override_font_sizes/font_size = 11
 text = "POZZ. AVV.\n(11)"
@@ -558,9 +558,9 @@ horizontal_alignment = 1
 [node name="DiscardScroll" type="ScrollContainer" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
 offset_left = 248.0
-offset_top = 6.0
+offset_top = 41.0
 offset_right = 675.0
-offset_bottom = 146.0
+offset_bottom = 181.0
 horizontal_scroll_mode = 1
 vertical_scroll_mode = 0
 
@@ -573,9 +573,9 @@ theme_override_constants/separation = -18
 custom_minimum_size = Vector2(425, 38)
 layout_mode = 0
 offset_left = 248.0
-offset_top = 150.0
+offset_top = 185.0
 offset_right = 675.0
-offset_bottom = 188.0
+offset_bottom = 223.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_gold_btn")
 theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
 theme_override_font_sizes/font_size = 14
@@ -596,9 +596,9 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 20.0
-offset_top = 540.0
+offset_top = 560.0
 offset_right = -20.0
-offset_bottom = 760.0
+offset_bottom = 670.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -607,9 +607,9 @@ alignment = 1
 layout_mode = 1
 anchors_preset = 0
 offset_left = 20.0
-offset_top = 775.0
+offset_top = 690.0
 offset_right = 250.0
-offset_bottom = 830.0
+offset_bottom = 745.0
 
 [node name="AvatarPlayer" type="TextureRect" parent="UI/TableLayer/PlayerProfileCard"]
 layout_mode = 0
@@ -641,9 +641,9 @@ text = "Tu (Campione)"
 visible = false
 layout_mode = 0
 offset_left = 65.0
-offset_top = 720.0
+offset_top = 644.0
 offset_right = 300.0
-offset_bottom = 756.0
+offset_bottom = 680.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_bubble")
 
 [node name="SpeechBubblePlayerLabel" type="Label" parent="UI/TableLayer/SpeechBubblePlayer"]
@@ -658,9 +658,9 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
 offset_left = 650.0
-offset_top = 775.0
+offset_top = 690.0
 offset_right = 700.0
-offset_bottom = 825.0
+offset_bottom = 740.0
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_gold_btn")
 theme_override_font_sizes/font_size = 20
@@ -671,9 +671,9 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 20.0
-offset_top = 840.0
+offset_top = 760.0
 offset_right = -20.0
-offset_bottom = 898.0
+offset_bottom = 818.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
 alignment = 1
@@ -703,9 +703,9 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 10.0
-offset_top = 918.0
+offset_top = 838.0
 offset_right = -10.0
-offset_bottom = 1180.0
+offset_bottom = 1100.0
 grow_horizontal = 2
 theme_override_constants/separation = -48
 alignment = 1
