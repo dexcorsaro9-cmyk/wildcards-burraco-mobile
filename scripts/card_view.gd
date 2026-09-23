@@ -15,17 +15,17 @@ signal card_long_pressed(card_view: CardView)
 @export var use_generic_long_press_preview: bool = true
 
 # Dimensioni carta (standard casinò e compatta per calate sul tavolo)
-const CARD_WIDTH: float = 46.0
-const CARD_HEIGHT: float = 67.0
-const COMPACT_WIDTH: float = 34.0
-const COMPACT_HEIGHT: float = 49.0
+const CARD_WIDTH: float = 60.0
+const CARD_HEIGHT: float = 87.0
+const COMPACT_WIDTH: float = 44.0
+const COMPACT_HEIGHT: float = 64.0
 # Sovrapposizione standard tra carte compatte impilate (calate, scarti):
 # stesso rapporto usato prima del ridimensionamento (~62% della larghezza).
-const COMPACT_OVERLAP: float = -21.0
+const COMPACT_OVERLAP: float = -27.0
 
 # Carte ferme: nessuna fisica a molla. Solo un piccolo sollevamento fisso
 # quando la carta è selezionata, applicato una volta sola, non animato.
-const SELECTED_LIFT_Y: float = -18.0
+const SELECTED_LIFT_Y: float = -23.0
 var visual_offset_y: float = 0.0
 
 var is_hovered: bool = false
