@@ -1,6 +1,6 @@
 // Service Worker PWA: cache dell'app-shell per installazione e avvio offline.
 // Bump CACHE_NAME ad ogni nuovo export web per invalidare la cache dei client.
-const CACHE_NAME = 'burraco-kingdom-pwa-v15';
+const CACHE_NAME = 'burraco-kingdom-pwa-v16';
 const PRECACHE_URLS = [
 	'./',
 	'./index.html',
