@@ -15,10 +15,13 @@ signal card_long_pressed(card_view: CardView)
 @export var use_generic_long_press_preview: bool = true
 
 # Dimensioni carta (standard casinò e compatta per calate sul tavolo)
-const CARD_WIDTH: float = 92.0
-const CARD_HEIGHT: float = 134.0
-const COMPACT_WIDTH: float = 68.0
-const COMPACT_HEIGHT: float = 98.0
+const CARD_WIDTH: float = 46.0
+const CARD_HEIGHT: float = 67.0
+const COMPACT_WIDTH: float = 34.0
+const COMPACT_HEIGHT: float = 49.0
+# Sovrapposizione standard tra carte compatte impilate (calate, scarti):
+# stesso rapporto usato prima del ridimensionamento (~62% della larghezza).
+const COMPACT_OVERLAP: float = -21.0
 
 # Carte ferme: nessuna fisica a molla. Solo un piccolo sollevamento fisso
 # quando la carta è selezionata, applicato una volta sola, non animato.
@@ -192,11 +195,6 @@ func _draw_legibility_overlay(draw_pos: Vector2) -> void:
     var s_chip_size = _measure_chip(rank_str, s_rank, s_icon, s_pad)
     _draw_index_chip(draw_pos + Vector2(size.x - s_pad - s_chip_size.x, size.y - s_pad - s_chip_size.y), chip_col, needs_border, rank_col, rank_str, s_rank, suit_tex, s_icon, font)
 
-    # Targhetta nome creatura (solo full-size, per non affollare le carte compatte)
-    if not is_compact and card_data.creature_name != "":
-        var is_rare_or_wild = card_data.is_wildcard() or card_data.creature_rarity == "Legendary" or card_data.creature_rarity == "Epic"
-        var text_col = Color(1.0, 0.85, 0.35) if is_rare_or_wild else Color(0.90, 0.90, 0.90)
-        draw_string(font, draw_pos + Vector2(8, size.y - 8), card_data.creature_name.to_upper(), HORIZONTAL_ALIGNMENT_CENTER, size.x - 16, 9, text_col)
 
 func _measure_chip(rank_str: String, rank_size: int, icon_size: float, pad: float) -> Vector2:
     var font = ThemeDB.fallback_font

@@ -110,7 +110,48 @@ func _ready() -> void:
             if modal_end: modal_end.visible = false
             start_new_match()
         )
+    _wrap_melds_in_scroll(melds_container)
+    _wrap_melds_in_scroll(opp_melds_container)
     start_new_match()
+
+## Con molte calate lunghe (specie con Jolly) la fila puo' superare la
+## larghezza dello schermo: incastona l'HBoxContainer delle calate in uno
+## ScrollContainer orizzontale che ne prende posizione/anchor, cosi' invece
+## di uscire dai bordi diventa scorrevole (come gia' avviene per gli scarti).
+func _wrap_melds_in_scroll(container: HBoxContainer) -> void:
+    if container == null:
+        return
+    var parent = container.get_parent()
+    if parent == null or container.get_meta("_scroll_wrapped", false):
+        return
+    var idx = container.get_index()
+
+    var scroll = ScrollContainer.new()
+    scroll.name = container.name + "Scroll"
+    scroll.layout_mode = container.layout_mode
+    scroll.anchors_preset = container.anchors_preset
+    scroll.anchor_left = container.anchor_left
+    scroll.anchor_top = container.anchor_top
+    scroll.anchor_right = container.anchor_right
+    scroll.anchor_bottom = container.anchor_bottom
+    scroll.offset_left = container.offset_left
+    scroll.offset_top = container.offset_top
+    scroll.offset_right = container.offset_right
+    scroll.offset_bottom = container.offset_bottom
+    scroll.grow_horizontal = container.grow_horizontal
+    scroll.grow_vertical = container.grow_vertical
+    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+
+    parent.add_child(scroll)
+    parent.move_child(scroll, idx)
+    parent.remove_child(container)
+    scroll.add_child(container)
+
+    container.layout_mode = 0
+    container.set_anchors_preset(Control.PRESET_TOP_LEFT)
+    container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    container.set_meta("_scroll_wrapped", true)
 
 func toggle_game_mode() -> void:
     if current_mode == GameMode.CLASSIC:
@@ -863,7 +904,7 @@ func refresh_all_ui() -> void:
     var p_clean = 0
     var p_dirty = 0
     for m in player_melds:
-        for c in m.cards: p_pts += c.get_points()
+        for c in m.cards: p_pts += c.get_point_value()
         var bt = m.get_burraco_type()
         if bt == BurracoRules.BurracoType.CLEAN: p_clean += 1
         elif bt in [BurracoRules.BurracoType.SEMI_CLEAN, BurracoRules.BurracoType.DIRTY]: p_dirty += 1
@@ -873,7 +914,7 @@ func refresh_all_ui() -> void:
     var o_clean = 0
     var o_dirty = 0
     for m in opponent_melds:
-        for c in m.cards: o_pts += c.get_points()
+        for c in m.cards: o_pts += c.get_point_value()
         var bt = m.get_burraco_type()
         if bt == BurracoRules.BurracoType.CLEAN: o_clean += 1
         elif bt in [BurracoRules.BurracoType.SEMI_CLEAN, BurracoRules.BurracoType.DIRTY]: o_dirty += 1
@@ -1012,7 +1053,7 @@ func _rebuild_melds_views() -> void:
                 col.add_child(seal)
 
             var cards_box = HBoxContainer.new()
-            cards_box.add_theme_constant_override("separation", -42)
+            cards_box.add_theme_constant_override("separation", int(CardView.COMPACT_OVERLAP))
             col.add_child(cards_box)
 
             for c in m.cards:
@@ -1036,7 +1077,7 @@ func _rebuild_melds_views() -> void:
                 col.add_child(seal)
 
             var cards_box = HBoxContainer.new()
-            cards_box.add_theme_constant_override("separation", -42)
+            cards_box.add_theme_constant_override("separation", int(CardView.COMPACT_OVERLAP))
             col.add_child(cards_box)
 
             for c in m.cards:
@@ -1052,7 +1093,15 @@ func _create_burraco_seal(m: BurracoRules.BurracoMeld) -> Control:
     if b_type == BurracoRules.BurracoType.NONE:
         return null
 
+    # Il sigillo non deve mai essere piu' largo della fila di carte sotto di
+    # esso (stessa formula usata per il layout con card compatta e overlap),
+    # altrimenti la colonna della calata si allarga ed esce dallo schermo
+    # quando il testo del sigillo e' lungo (es. calate con Jolly).
+    var card_row_width = m.cards.size() * (CardView.COMPACT_WIDTH + CardView.COMPACT_OVERLAP) - CardView.COMPACT_OVERLAP
+
     var panel = PanelContainer.new()
+    panel.custom_minimum_size = Vector2(card_row_width, 0)
+    panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     var sb = StyleBoxFlat.new()
     sb.corner_radius_top_left = 6
     sb.corner_radius_top_right = 6
@@ -1070,7 +1119,9 @@ func _create_burraco_seal(m: BurracoRules.BurracoMeld) -> Control:
     var lbl = Label.new()
     lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-    lbl.add_theme_font_size_override("font_size", 11)
+    lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    lbl.custom_minimum_size = Vector2(max(card_row_width - 16.0, 40.0), 0)
+    lbl.add_theme_font_size_override("font_size", 9)
 
     match b_type:
         BurracoRules.BurracoType.CLEAN:

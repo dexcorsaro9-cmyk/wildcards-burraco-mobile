@@ -867,33 +867,56 @@ func _check_cli_args() -> void:
         if "test-melds" in arg:
             get_tree().create_timer(0.3).timeout.connect(func():
                 _start_quick_game()
-                var mgr = get_node_or_null("/root/Main/BurracoGameManager")
-                if mgr:
-                    var CardData = preload("res://scripts/card_data.gd")
-                    var Rules = preload("res://scripts/rules.gd")
-                    var m1 = Rules.BurracoMeld.new()
-                    m1.type = Rules.MeldType.SEQUENCE
-                    m1.suit = CardData.Suit.SPADES
-                    for r in [CardData.Rank.THREE, CardData.Rank.FOUR, CardData.Rank.FIVE, CardData.Rank.SIX, CardData.Rank.SEVEN, CardData.Rank.EIGHT, CardData.Rank.NINE]:
-                        m1.cards.append(CardData.create_card(100 + r, CardData.Suit.SPADES, r))
-                    mgr.player_melds.append(m1)
+                # _start_quick_game() avvia un tween di 0.30s che chiama
+                # mgr.start_quick_match() -> start_new_match() al termine,
+                # la quale AZZERA calate/pozzetti e ri-disegna la UI: bisogna
+                # aspettare che finisca prima di iniettare i dati di test,
+                # altrimenti vengono cancellati subito dopo.
+                get_tree().create_timer(0.5).timeout.connect(func():
+                    var mgr = get_node_or_null("/root/Main/BurracoGameManager")
+                    if mgr:
+                        var CardData = preload("res://scripts/card_data.gd")
+                        var Rules = preload("res://scripts/rules.gd")
 
-                    var m3 = Rules.BurracoMeld.new()
-                    m3.type = Rules.MeldType.SEQUENCE
-                    m3.suit = CardData.Suit.HEARTS
-                    var j_card = CardData.create_card(300, CardData.Suit.JOKER, CardData.Rank.NONE, 0, true)
-                    m3.cards.append(j_card)
-                    for r in [CardData.Rank.FOUR, CardData.Rank.FIVE, CardData.Rank.SIX, CardData.Rank.SEVEN, CardData.Rank.EIGHT, CardData.Rank.NINE]:
-                        m3.cards.append(CardData.create_card(300 + r, CardData.Suit.HEARTS, r))
-                    mgr.opponent_melds.append(m3)
+                        # Stress-test: mano tarda con pozzetti presi, scarti numerosi
+                        # e piu' calate per lato, per verificare che nulla si sovrapponga.
+                        var suits = [CardData.Suit.SPADES, CardData.Suit.HEARTS, CardData.Suit.DIAMONDS, CardData.Suit.CLUBS]
+                        for i in range(4):
+                            var m = Rules.BurracoMeld.new()
+                            m.type = Rules.MeldType.SEQUENCE
+                            m.suit = suits[i]
+                            for r in [CardData.Rank.THREE, CardData.Rank.FOUR, CardData.Rank.FIVE, CardData.Rank.SIX, CardData.Rank.SEVEN]:
+                                m.cards.append(CardData.create_card(1000 + i * 20 + r, suits[i], r))
+                            mgr.player_melds.append(m)
 
-                    # Sample cards in discard pile for testing swipeable strip
-                    mgr.deck.discard_pile.append(CardData.create_card(205, CardData.Suit.DIAMONDS, CardData.Rank.FIVE))
-                    mgr.deck.discard_pile.append(CardData.create_card(206, CardData.Suit.DIAMONDS, CardData.Rank.SIX))
-                    mgr.deck.discard_pile.append(CardData.create_card(108, CardData.Suit.SPADES, CardData.Rank.EIGHT))
-                    mgr.deck.discard_pile.append(CardData.create_card(402, CardData.Suit.CLUBS, CardData.Rank.TWO, 0, false))
+                        for i in range(3):
+                            var m2 = Rules.BurracoMeld.new()
+                            m2.type = Rules.MeldType.SEQUENCE
+                            m2.suit = suits[i]
+                            var j_card = CardData.create_card(2000 + i, CardData.Suit.JOKER, CardData.Rank.NONE, 0, true)
+                            m2.cards.append(j_card)
+                            for r in [CardData.Rank.FOUR, CardData.Rank.FIVE, CardData.Rank.SIX, CardData.Rank.SEVEN, CardData.Rank.EIGHT, CardData.Rank.NINE]:
+                                m2.cards.append(CardData.create_card(2100 + i * 20 + r, suits[i], r))
+                            mgr.opponent_melds.append(m2)
 
-                    mgr.refresh_all_ui()
+                        mgr.player_has_pozzetto = true
+                        mgr.opponent_has_pozzetto = true
+
+                        # Scarti numerosi per testare la striscia scorrevole
+                        for i in range(9):
+                            var rnk = (i % 10) + 1
+                            mgr.deck.discard_pile.append(CardData.create_card(3000 + i, suits[i % 4], rnk))
+
+                        mgr.refresh_all_ui()
+
+                        get_tree().create_timer(0.6).timeout.connect(func():
+                            var img = get_viewport().get_texture().get_image()
+                            var p = ProjectSettings.globalize_path("res://assets/melds_screenshot.png")
+                            img.save_png(p)
+                            print("MELDS_SCREENSHOT_SAVED: ", p)
+                            get_tree().quit()
+                        )
+                )
             )
 
         if "test-game" in arg:
