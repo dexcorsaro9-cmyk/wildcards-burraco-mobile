@@ -930,45 +930,26 @@ func refresh_all_ui() -> void:
     if stock_label:
         stock_label.text = "TALLONE\n(%d)" % deck.stock_pile.size()
 
-    # Aggiorna Pozzetto Giocatore sul Board
+    # Pozzetto Giocatore: piccolo chip "P", acceso se ancora da prendere,
+    # spento (scuro) se gia' preso - come nel burraco online.
     var p_count = deck.pozzetto_player.size()
-    if player_has_pozzetto or p_count == 0:
-        if pozzetto_p_card: pozzetto_p_card.visible = false
-        if pozzetto_p_shadow: pozzetto_p_shadow.visible = false
-        if pozzetto_p_badge: pozzetto_p_badge.visible = false
-        if pozzetto_p_empty: pozzetto_p_empty.visible = true
-        if pozzetto_p_label:
-            pozzetto_p_label.text = "TUO POZZ.\n✓ PRESO"
-            pozzetto_p_label.modulate = Color(0.45, 0.95, 0.45)
-    else:
-        if pozzetto_p_card: pozzetto_p_card.visible = true
-        if pozzetto_p_shadow: pozzetto_p_shadow.visible = true
-        if pozzetto_p_badge: pozzetto_p_badge.visible = true
-        if pozzetto_p_empty: pozzetto_p_empty.visible = false
-        if pozzetto_p_badge_lbl: pozzetto_p_badge_lbl.text = str(p_count)
-        if pozzetto_p_label:
-            pozzetto_p_label.text = "TUO POZZ.\n(%d)" % p_count
-            pozzetto_p_label.modulate = Color(1.0, 0.88, 0.35)
+    if pozzetto_p_card: pozzetto_p_card.visible = false
+    if pozzetto_p_shadow: pozzetto_p_shadow.visible = false
+    if pozzetto_p_empty: pozzetto_p_empty.visible = false
+    if pozzetto_p_badge: pozzetto_p_badge.visible = true
+    var p_taken = player_has_pozzetto or p_count == 0
+    if pozzetto_p_badge: pozzetto_p_badge.modulate = Color(0.4, 0.4, 0.45) if p_taken else Color(1, 1, 1)
+    if pozzetto_p_badge_lbl: pozzetto_p_badge_lbl.modulate = Color(0.6, 0.6, 0.65) if p_taken else Color(1.0, 0.9, 0.35)
 
-    # Aggiorna Pozzetto Avversario sul Board
+    # Pozzetto Avversario: stesso chip "P".
     var o_count = deck.pozzetto_opponent.size()
-    if opponent_has_pozzetto or o_count == 0:
-        if pozzetto_o_card: pozzetto_o_card.visible = false
-        if pozzetto_o_shadow: pozzetto_o_shadow.visible = false
-        if pozzetto_o_badge: pozzetto_o_badge.visible = false
-        if pozzetto_o_empty: pozzetto_o_empty.visible = true
-        if pozzetto_o_label:
-            pozzetto_o_label.text = "POZZ. AVV.\n✓ PRESO"
-            pozzetto_o_label.modulate = Color(0.75, 0.75, 0.9)
-    else:
-        if pozzetto_o_card: pozzetto_o_card.visible = true
-        if pozzetto_o_shadow: pozzetto_o_shadow.visible = true
-        if pozzetto_o_badge: pozzetto_o_badge.visible = true
-        if pozzetto_o_empty: pozzetto_o_empty.visible = false
-        if pozzetto_o_badge_lbl: pozzetto_o_badge_lbl.text = str(o_count)
-        if pozzetto_o_label:
-            pozzetto_o_label.text = "POZZ. AVV.\n(%d)" % o_count
-            pozzetto_o_label.modulate = Color(0.9, 0.85, 0.85)
+    if pozzetto_o_card: pozzetto_o_card.visible = false
+    if pozzetto_o_shadow: pozzetto_o_shadow.visible = false
+    if pozzetto_o_empty: pozzetto_o_empty.visible = false
+    if pozzetto_o_badge: pozzetto_o_badge.visible = true
+    var o_taken = opponent_has_pozzetto or o_count == 0
+    if pozzetto_o_badge: pozzetto_o_badge.modulate = Color(0.4, 0.4, 0.45) if o_taken else Color(1, 1, 1)
+    if pozzetto_o_badge_lbl: pozzetto_o_badge_lbl.modulate = Color(0.6, 0.6, 0.65) if o_taken else Color(1.0, 0.9, 0.35)
     var has_discards = deck.discard_pile.size() > 0
     var can_take_discard = is_player_turn and current_phase == Phase.DRAW and has_discards and not (current_mode == GameMode.WILD and discard_frozen_turns > 0)
     if discard_label_btn:

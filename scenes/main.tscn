@@ -24,15 +24,15 @@ corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
 bg_color = Color(0.08, 0.12, 0.18, 0.95)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 border_color = Color(0.96, 0.82, 0.25, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+corner_radius_top_left = 17
+corner_radius_top_right = 17
+corner_radius_bottom_right = 17
+corner_radius_bottom_left = 17
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scoreboard"]
 bg_color = Color(0.05, 0.07, 0.14, 0.88)
@@ -361,18 +361,18 @@ grow_horizontal = 2
 
 [node name="StockShadow" type="ColorRect" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
-offset_left = 9.0
+offset_left = 238.0
 offset_top = 46.0
-offset_right = 79.0
+offset_right = 308.0
 offset_bottom = 150.0
 color = Color(0, 0, 0, 0.45)
 
 [node name="StockButton" type="TextureButton" parent="UI/TableLayer/CenterArea"]
 custom_minimum_size = Vector2(70, 104)
 layout_mode = 0
-offset_left = 6.0
+offset_left = 235.0
 offset_top = 43.0
-offset_right = 76.0
+offset_right = 305.0
 offset_bottom = 147.0
 mouse_default_cursor_shape = 2
 ignore_texture_size = true
@@ -380,9 +380,9 @@ stretch_mode = 5
 
 [node name="StockLabel" type="Label" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
-offset_left = 2.0
+offset_left = 231.0
 offset_top = 151.0
-offset_right = 80.0
+offset_right = 309.0
 offset_bottom = 183.0
 theme_override_colors/font_color = Color(0.96, 0.82, 0.22, 1)
 theme_override_font_sizes/font_size = 11
@@ -391,10 +391,10 @@ horizontal_alignment = 1
 
 [node name="PozzettoPlayer" type="Control" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
-offset_left = 86.0
-offset_top = 43.0
-offset_right = 156.0
-offset_bottom = 147.0
+offset_left = 612.0
+offset_top = 4.0
+offset_right = 646.0
+offset_bottom = 38.0
 
 [node name="Shadow" type="ColorRect" parent="UI/TableLayer/CenterArea/PozzettoPlayer"]
 layout_mode = 0
@@ -433,10 +433,10 @@ stretch_mode = 5
 
 [node name="Badge" type="Panel" parent="UI/TableLayer/CenterArea/PozzettoPlayer"]
 layout_mode = 0
-offset_left = 44.0
-offset_top = 3.0
-offset_right = 67.0
-offset_bottom = 21.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 34.0
+offset_bottom = 34.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
 
 [node name="BadgeLabel" type="Label" parent="UI/TableLayer/CenterArea/PozzettoPlayer/Badge"]
@@ -447,8 +447,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.35, 1)
-theme_override_font_sizes/font_size = 11
-text = "11"
+theme_override_font_sizes/font_size = 16
+text = "P"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -462,6 +462,7 @@ grow_vertical = 2
 mouse_default_cursor_shape = 2
 
 [node name="PozzettoPlayerLabel" type="Label" parent="UI/TableLayer/CenterArea"]
+visible = false
 layout_mode = 0
 offset_left = 82.0
 offset_top = 151.0
@@ -474,10 +475,10 @@ horizontal_alignment = 1
 
 [node name="PozzettoOpponent" type="Control" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
-offset_left = 166.0
-offset_top = 43.0
-offset_right = 236.0
-offset_bottom = 147.0
+offset_left = 612.0
+offset_top = 44.0
+offset_right = 646.0
+offset_bottom = 78.0
 
 [node name="Shadow" type="ColorRect" parent="UI/TableLayer/CenterArea/PozzettoOpponent"]
 layout_mode = 0
@@ -516,10 +517,10 @@ stretch_mode = 5
 
 [node name="Badge" type="Panel" parent="UI/TableLayer/CenterArea/PozzettoOpponent"]
 layout_mode = 0
-offset_left = 44.0
-offset_top = 3.0
-offset_right = 67.0
-offset_bottom = 21.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 34.0
+offset_bottom = 34.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
 
 [node name="BadgeLabel" type="Label" parent="UI/TableLayer/CenterArea/PozzettoOpponent/Badge"]
@@ -530,8 +531,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.35, 1)
-theme_override_font_sizes/font_size = 11
-text = "11"
+theme_override_font_sizes/font_size = 16
+text = "P"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -545,10 +546,11 @@ grow_vertical = 2
 mouse_default_cursor_shape = 2
 
 [node name="PozzettoOpponentLabel" type="Label" parent="UI/TableLayer/CenterArea"]
+visible = false
 layout_mode = 0
-offset_left = 162.0
+offset_left = 2.0
 offset_top = 151.0
-offset_right = 240.0
+offset_right = 80.0
 offset_bottom = 183.0
 theme_override_colors/font_color = Color(0.85, 0.85, 0.88, 1)
 theme_override_font_sizes/font_size = 11
@@ -557,7 +559,7 @@ horizontal_alignment = 1
 
 [node name="DiscardScroll" type="ScrollContainer" parent="UI/TableLayer/CenterArea"]
 layout_mode = 0
-offset_left = 248.0
+offset_left = 315.0
 offset_top = 41.0
 offset_right = 675.0
 offset_bottom = 181.0
