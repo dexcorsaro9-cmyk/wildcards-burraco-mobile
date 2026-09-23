@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b7y2n5qwc8vld"]
+[gd_scene load_steps=10 format=3 uid="uid://b7y2n5qwc8vld"]
 
 [ext_resource type="Script" path="res://scripts/audio_synth.gd" id="1_audio"]
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="2_mgr"]
@@ -11,16 +11,30 @@
 bg_color = Color(0.04, 0.06, 0.1, 0.95)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pozzetto_empty"]
-bg_color = Color(0.04, 0.08, 0.05, 0.6)
+bg_color = Color(0.05, 0.07, 0.14, 0.6)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.75, 0.65, 0.35, 0.45)
+border_color = Color(0.9, 0.76, 0.3, 0.55)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_table_frame"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0.96, 0.82, 0.25, 0.9)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+shadow_size = 14
+shadow_color = Color(0.96, 0.82, 0.25, 0.18)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
 bg_color = Color(0.08, 0.12, 0.18, 0.95)
@@ -35,7 +49,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scoreboard"]
-bg_color = Color(0.04, 0.08, 0.06, 0.85)
+bg_color = Color(0.05, 0.07, 0.14, 0.88)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
@@ -129,6 +143,19 @@ grow_vertical = 2
 
 expand_mode = 1
 stretch_mode = 6
+
+[node name="TableFrame" type="Panel" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 64.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_table_frame")
 
 [node name="HeaderBar" type="Panel" parent="UI"]
 custom_minimum_size = Vector2(0, 56)

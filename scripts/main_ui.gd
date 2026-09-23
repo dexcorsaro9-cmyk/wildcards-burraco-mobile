@@ -36,10 +36,7 @@ var club_info_modal: Control
 func _ready() -> void:
     _install_emoji_fallback_font()
     if bg_texture_rect:
-        var table_tex = AssetLoader.get_tex("res://assets/table_felt_taverna.png")
-        if table_tex == null:
-            table_tex = AssetLoader.get_tex("res://assets/table_felt_luxury.png")
-        bg_texture_rect.texture = table_tex
+        _apply_table_background(bg_texture_rect)
 
     var back_tex = AssetLoader.get_tex("res://assets/card_back_taverna.png")
     if back_tex == null:
@@ -125,65 +122,76 @@ func _ready() -> void:
     # Process command line testing flags
     _check_cli_args()
 
-# Frazione della finestra interna di avatar_frame_wood.jpg (stimata a occhio sull'immagine
-# generata): la cornice intagliata non ha un buco trasparente, quindi il ritratto va
-# disegnato SOPRA riempiendo esattamente quella finestra, mentre il legno resta visibile
-# intorno come bordo.
-const AVATAR_WINDOW_LEFT_FRAC: float = 0.19
-const AVATAR_WINDOW_TOP_FRAC: float = 0.21
-const AVATAR_WINDOW_WIDTH_FRAC: float = 0.63
-const AVATAR_WINDOW_HEIGHT_FRAC: float = 0.59
+const AVATAR_FRAME_GOLD: Color = Color(0.96, 0.82, 0.25, 1.0)
+const AVATAR_FRAME_BG: Color = Color(0.05, 0.07, 0.14, 1.0)
 
 func _apply_taverna_profile_style(card: Control, avatar: TextureRect, turn_ring: Control, info_control: Control, avatar_path: String, frame_size: float) -> void:
     if card == null or avatar == null:
         return
 
-    var frame_tex = AssetLoader.get_tex("res://assets/avatar_frame_wood.jpg")
-    if frame_tex == null:
-        avatar.texture = AssetLoader.get_tex(avatar_path)
-        return
+    # Cornice oro pulita (stesso linguaggio visivo del bordo dorato delle
+    # carte) al posto della vecchia cornice in legno intagliato, che non si
+    # sposava con lo stile "reale/gioielli" blu e oro delle carte.
+    var frame_panel = Panel.new()
+    frame_panel.position = Vector2(-4.0, -4.0)
+    frame_panel.size = Vector2(frame_size + 8.0, frame_size + 8.0)
+    frame_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    var frame_sb = StyleBoxFlat.new()
+    frame_sb.bg_color = AVATAR_FRAME_BG
+    frame_sb.border_width_left = 3
+    frame_sb.border_width_top = 3
+    frame_sb.border_width_right = 3
+    frame_sb.border_width_bottom = 3
+    frame_sb.border_color = AVATAR_FRAME_GOLD
+    frame_sb.corner_radius_top_left = 10
+    frame_sb.corner_radius_top_right = 10
+    frame_sb.corner_radius_bottom_right = 10
+    frame_sb.corner_radius_bottom_left = 10
+    frame_panel.add_theme_stylebox_override("panel", frame_sb)
+    frame_panel.z_index = -3
+    card.add_child(frame_panel)
 
-    # Ordine di disegno via z_index (mai move_child: riordinare i figli qui
-    # innesca una ri-registrazione dei segnali dei pulsanti dell'header —
-    # osservato empiricamente su Godot 4.3, evitato del tutto con z_index).
-    var frame_rect = TextureRect.new()
-    frame_rect.texture = frame_tex
-    frame_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-    frame_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    frame_rect.position = Vector2.ZERO
-    frame_rect.size = Vector2(frame_size, frame_size)
-    frame_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    frame_rect.z_index = -3
-    card.add_child(frame_rect)
-
-    var win_pos = Vector2(frame_size * AVATAR_WINDOW_LEFT_FRAC, frame_size * AVATAR_WINDOW_TOP_FRAC)
-    var win_size = Vector2(frame_size * AVATAR_WINDOW_WIDTH_FRAC, frame_size * AVATAR_WINDOW_HEIGHT_FRAC)
-
-    avatar.position = win_pos
-    avatar.size = win_size
+    avatar.position = Vector2.ZERO
+    avatar.size = Vector2(frame_size, frame_size)
     avatar.texture = AssetLoader.get_tex(avatar_path)
     avatar.z_index = -2
 
     if turn_ring:
-        turn_ring.position = Vector2.ZERO
-        turn_ring.size = Vector2(frame_size, frame_size)
+        turn_ring.position = Vector2(-4.0, -4.0)
+        turn_ring.size = Vector2(frame_size + 8.0, frame_size + 8.0)
         turn_ring.z_index = -1
 
     if info_control:
         info_control.position.x = frame_size + 14.0
 
-        var plate_tex = AssetLoader.get_tex("res://assets/nameplate_wood_iso.png")
-        if plate_tex != null:
-            var plate = TextureRect.new()
-            plate.texture = plate_tex
-            plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-            plate.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-            plate.position = info_control.position + Vector2(-10.0, -6.0)
-            plate.size = info_control.size + Vector2(20.0, 12.0)
-            plate.modulate = Color(1.0, 1.0, 1.0, 0.55)
-            plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-            plate.z_index = -1
-            card.add_child(plate)
+        var plate_sb = StyleBoxFlat.new()
+        plate_sb.bg_color = Color(0.04, 0.06, 0.12, 0.55)
+        plate_sb.corner_radius_top_left = 6
+        plate_sb.corner_radius_top_right = 6
+        plate_sb.corner_radius_bottom_right = 6
+        plate_sb.corner_radius_bottom_left = 6
+        var plate = Panel.new()
+        plate.add_theme_stylebox_override("panel", plate_sb)
+        plate.position = info_control.position + Vector2(-10.0, -6.0)
+        plate.size = info_control.size + Vector2(20.0, 12.0)
+        plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        plate.z_index = -1
+        card.add_child(plate)
+
+func _apply_table_background(rect: TextureRect) -> void:
+    var gradient = Gradient.new()
+    gradient.colors = PackedColorArray([Color(0.11, 0.16, 0.32, 1.0), Color(0.02, 0.03, 0.07, 1.0)])
+    gradient.offsets = PackedFloat32Array([0.0, 1.0])
+    var tex = GradientTexture2D.new()
+    tex.gradient = gradient
+    tex.fill = GradientTexture2D.FILL_RADIAL
+    tex.fill_from = Vector2(0.5, 0.38)
+    tex.fill_to = Vector2(0.5, 1.05)
+    tex.width = 512
+    tex.height = 512
+    rect.texture = tex
+    rect.stretch_mode = TextureRect.STRETCH_SCALE
+    rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 
 func _install_emoji_fallback_font() -> void:
     var emoji_font = load("res://assets/fonts/emoji_subset.ttf")
