@@ -55,6 +55,7 @@ jobs:
 
       - name: Install Android Gradle Build Template
         run: |
+          mkdir -v -p android/build
           unzip -o -q ~/.local/share/godot/export_templates/4.3.stable/android_source.zip -d android/build
           echo "4.3.stable" > android/build/.build_version
 
