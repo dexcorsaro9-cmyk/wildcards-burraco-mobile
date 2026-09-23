@@ -36,7 +36,10 @@ var club_info_modal: Control
 func _ready() -> void:
     _install_emoji_fallback_font()
     if bg_texture_rect:
-        bg_texture_rect.texture = AssetLoader.get_tex("res://assets/table_felt_luxury.png")
+        var table_tex = AssetLoader.get_tex("res://assets/table_felt_taverna.png")
+        if table_tex == null:
+            table_tex = AssetLoader.get_tex("res://assets/table_felt_luxury.png")
+        bg_texture_rect.texture = table_tex
 
     var back_tex = AssetLoader.get_tex("res://assets/card_back_taverna.png")
     if back_tex == null:

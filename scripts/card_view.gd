@@ -15,26 +15,15 @@ signal card_long_pressed(card_view: CardView)
 @export var use_generic_long_press_preview: bool = true
 
 # Dimensioni carta (standard casinò e compatta per calate sul tavolo)
-const CARD_WIDTH: float = 104.0
-const CARD_HEIGHT: float = 152.0
+const CARD_WIDTH: float = 92.0
+const CARD_HEIGHT: float = 134.0
 const COMPACT_WIDTH: float = 68.0
 const COMPACT_HEIGHT: float = 98.0
 
-# Parametri Balatro Spring Physics
+# Carte ferme: nessuna fisica a molla. Solo un piccolo sollevamento fisso
+# quando la carta è selezionata, applicato una volta sola, non animato.
+const SELECTED_LIFT_Y: float = -18.0
 var visual_offset_y: float = 0.0
-var vel_y: float = 0.0
-const POS_TENSION: float = 420.0
-const POS_DAMPING: float = 24.0
-
-var target_rot: float = 0.0
-var rot_velocity: float = 0.0
-const ROT_TENSION: float = 460.0
-const ROT_DAMPING: float = 22.0
-
-var target_scale_val: float = 1.0
-var scale_velocity: float = 0.0
-const SCALE_TENSION: float = 500.0
-const SCALE_DAMPING: float = 26.0
 
 var is_hovered: bool = false
 var audio_synth: Node = null
@@ -56,6 +45,8 @@ func _ready() -> void:
     custom_minimum_size = Vector2(w, h)
     size = Vector2(w, h)
     pivot_offset = size / 2.0
+    size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+    size_flags_vertical = Control.SIZE_SHRINK_CENTER
     mouse_filter = Control.MOUSE_FILTER_STOP
     mouse_entered.connect(_on_mouse_entered)
     mouse_exited.connect(_on_mouse_exited)
@@ -75,43 +66,6 @@ func setup(p_card: BurracoCardData, p_compact: bool = false) -> void:
     custom_minimum_size = Vector2(w, h)
     size = Vector2(w, h)
     pivot_offset = size / 2.0
-    queue_redraw()
-
-func _process(delta: float) -> void:
-    var target_y = 0.0
-    if not is_compact:
-        target_y = -34.0 if is_selected else (-22.0 if is_hovered else 0.0)
-    else:
-        target_y = -8.0 if is_hovered else 0.0
-
-    var disp_y = target_y - visual_offset_y
-    var force_y = disp_y * POS_TENSION - vel_y * POS_DAMPING
-    vel_y += force_y * delta
-    visual_offset_y += vel_y * delta
-
-    if is_hovered:
-        var mouse_local = get_local_mouse_position() - pivot_offset
-        target_rot = clamp(mouse_local.x * 0.016, -0.22, 0.22)
-    else:
-        target_rot = 0.0
-
-    var disp_rot = target_rot - rotation
-    var force_rot = disp_rot * ROT_TENSION - rot_velocity * ROT_DAMPING
-    rot_velocity += force_rot * delta
-    rotation += rot_velocity * delta
-
-    if not is_compact:
-        target_scale_val = 1.15 if (is_hovered or is_selected) else 1.0
-    else:
-        target_scale_val = 1.08 if is_hovered else 1.0
-
-    var current_scale_val = scale.x
-    var disp_scale = target_scale_val - current_scale_val
-    var force_scale = disp_scale * SCALE_TENSION - scale_velocity * SCALE_DAMPING
-    scale_velocity += force_scale * delta
-    var new_s = current_scale_val + scale_velocity * delta
-    scale = Vector2(new_s, new_s)
-
     queue_redraw()
 
 func _on_mouse_entered() -> void:
@@ -149,6 +103,7 @@ func _on_long_press_timeout() -> void:
 func set_selected(p_sel: bool) -> void:
     is_selected = p_sel
     z_index = 15 if is_selected else 0
+    visual_offset_y = SELECTED_LIFT_Y if (is_selected and not is_compact) else 0.0
     queue_redraw()
 
 func _draw() -> void:

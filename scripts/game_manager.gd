@@ -975,9 +975,15 @@ func _rebuild_hand_views() -> void:
         child.queue_free()
 
     var count = player_hand.size()
-    var sep = -36
-    if count > 12:
-        sep = clamp(int(-36 - (count - 12) * 2.8), -62, -20)
+    var card_w = CardView.CARD_WIDTH
+    var avail_w = hand_container.size.x
+    if avail_w <= 0.0:
+        avail_w = 700.0
+    var sep = -20
+    if count > 1:
+        var needed_sep = (avail_w - count * card_w) / float(count - 1)
+        sep = int(min(-20.0, floor(needed_sep)))
+        sep = int(max(sep, -card_w * 0.78))
     hand_container.add_theme_constant_override("separation", sep)
 
     for card in player_hand:
