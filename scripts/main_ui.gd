@@ -206,13 +206,6 @@ func _process(delta: float) -> void:
         menu_logo.scale = Vector2(s, s)
         menu_logo.pivot_offset = menu_logo.size / 2.0
 
-    # 2. Pulsing golden glow for Burraco Veloce hero button
-    if quick_play_btn != null and main_menu_layer != null and main_menu_layer.visible:
-        var pulse = (sin(menu_anim_time * 4.5) + 1.0) * 0.5
-        var border_col = Color(1.0, 0.82 + pulse * 0.18, 0.20 + pulse * 0.35, 1.0)
-        var sb = quick_play_btn.get_theme_stylebox("normal")
-        if sb is StyleBoxFlat:
-            sb.border_color = border_col
 
 # ==============================================================================
 # 1. MAIN MENU (MEDIEVAL TAVERN PIXAR/CLASH + 4 GRANDI BOTTONI IN GRIGLIA)
@@ -226,187 +219,102 @@ func _build_main_menu() -> void:
     main_menu_layer.z_index = 35
     add_child(main_menu_layer)
 
-    # 1. Medieval Tavern Background (Pixar & Clash Royale 3D Style)
+    # 1. Sfondo unico "Burraco Kingdom" (titolo + 4 riquadri intagliati già incisi nell'immagine)
     var bg_img = TextureRect.new()
-    bg_img.name = "MedievalBackground"
+    bg_img.name = "MenuBackground"
     bg_img.set_anchors_preset(Control.PRESET_FULL_RECT)
-    bg_img.texture = AssetLoader.get_tex("res://assets/menu_bg_medieval.png")
+    bg_img.texture = AssetLoader.get_tex("res://assets/menu_background_kingdom.png")
     if bg_img.texture == null:
-        bg_img.texture = AssetLoader.get_tex("res://assets/menu_bg_medieval.jpg")
+        bg_img.texture = AssetLoader.get_tex("res://assets/menu_bg_medieval.png")
     bg_img.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
     bg_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
     main_menu_layer.add_child(bg_img)
 
-    # 2. Vignette / Warm Scrim for Maximum UI Contrast
-    var scrim = ColorRect.new()
-    scrim.set_anchors_preset(Control.PRESET_FULL_RECT)
-    scrim.color = Color(0.02, 0.01, 0.01, 0.20)
-    main_menu_layer.add_child(scrim)
-
-    # 3. Responsive Center Container (Centers perfectly on every phone & tablet)
-    var center_container = CenterContainer.new()
-    center_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-    main_menu_layer.add_child(center_container)
-
-    # 4. Main Content Vertical Box (Portrait 720 x 1280)
-    var main_vbox = VBoxContainer.new()
-    main_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-    main_vbox.custom_minimum_size = Vector2(650, 0)
-    main_vbox.add_theme_constant_override("separation", 20)
-    center_container.add_child(main_vbox)
-
-    # 5. Top 3D Pixar/Clash Logo (Clean, centered, floating, majestic in portrait)
-    menu_logo = TextureRect.new()
-    menu_logo.custom_minimum_size = Vector2(560, 244)
-    menu_logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-    menu_logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-    menu_logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-    menu_logo.texture = AssetLoader.get_tex("res://assets/logo_burraco_kingdom_menu.png")
-    main_vbox.add_child(menu_logo)
-
-    # 6. 4 GRANDI BOTTONI VERTICALI (Larghi 640px, Alti 135px, distanziati per riempire lo schermo)
-    var btn_box = VBoxContainer.new()
-    btn_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    btn_box.add_theme_constant_override("separation", 18)
-    main_vbox.add_child(btn_box)
-
-    # BUTTON 1: STORIA
-    var btn_story = _create_huge_card_button(
-        "⚔️",
-        "STORIA",
-        "Campagna Roguelike & Sfide nei Club",
-        "✦ ATTO I DISPONIBILE ✦",
-        Color(0.10, 0.20, 0.44, 0.98),
-        Color(0.92, 0.78, 0.35, 1.0)
+    # 2. Bottoni trasparenti incastonati esattamente sui 4 riquadri già disegnati
+    #    nello sfondo (coordinate misurate sull'immagine sorgente 572x1024,
+    #    scalate al canvas 720x1280 con lo stesso fattore usato da COVERED).
+    var btn_story = _create_menu_slot_button(
+        "STORIA", "Campagna Roguelike & Sfide nei Club", Color(0.95, 0.85, 0.45, 1.0)
     )
+    btn_story.position = Vector2(140, 385)
+    btn_story.size = Vector2(440, 100)
     btn_story.pressed.connect(_on_btn_story_pressed)
-    btn_box.add_child(btn_story)
+    main_menu_layer.add_child(btn_story)
 
-    # BUTTON 2: BURRACO VELOCE (PRIMARY HERO BUTTON - CLASH STYLE GOLD)
-    quick_play_btn = _create_huge_card_button(
-        "🃏",
-        "BURRACO VELOCE",
-        "Partita Rapida Tradizionale F.I.BUR 1v1",
-        "⭐ GIOCA SUBITO ⭐",
-        Color(0.72, 0.42, 0.04, 0.98),
-        Color(1.0, 0.88, 0.28, 1.0),
-        true
+    # BURRACO VELOCE: bottone hero, riquadro verde
+    quick_play_btn = _create_menu_slot_button(
+        "BURRACO VELOCE", "Partita Rapida Tradizionale F.I.BUR 1v1", Color(0.55, 1.0, 0.65, 1.0)
     )
+    quick_play_btn.position = Vector2(140, 597)
+    quick_play_btn.size = Vector2(440, 100)
     quick_play_btn.pressed.connect(_start_quick_game)
-    btn_box.add_child(quick_play_btn)
+    main_menu_layer.add_child(quick_play_btn)
 
-    # BUTTON 3: ONLINE
-    var btn_online = _create_huge_card_button(
-        "🌐",
-        "ONLINE",
-        "Tornei, Classificate & Stanze con Amici",
-        "✦ MULTIPLAYER F.I.BUR ✦",
-        Color(0.08, 0.36, 0.22, 0.98),
-        Color(0.42, 0.95, 0.68, 1.0)
+    var btn_online = _create_menu_slot_button(
+        "ONLINE", "Tornei, Classificate & Stanze con Amici", Color(1.0, 0.65, 0.75, 1.0)
     )
+    btn_online.position = Vector2(140, 823)
+    btn_online.size = Vector2(440, 100)
     btn_online.pressed.connect(_on_btn_online_pressed)
-    btn_box.add_child(btn_online)
+    main_menu_layer.add_child(btn_online)
 
-    # BUTTON 4: REGOLE
-    var btn_rules = _create_huge_card_button(
-        "📜",
-        "REGOLE",
-        "Manuale Ufficiale, Burrachi & Punteggi",
-        "✦ GUIDA UFFICIALE ✦",
-        Color(0.46, 0.12, 0.08, 0.98),
-        Color(1.0, 0.76, 0.45, 1.0)
+    var btn_rules = _create_menu_slot_button(
+        "REGOLE", "Manuale Ufficiale, Burrachi & Punteggi", Color(1.0, 0.92, 0.65, 1.0)
     )
+    btn_rules.position = Vector2(140, 1035)
+    btn_rules.size = Vector2(440, 100)
     btn_rules.pressed.connect(_show_rules_modal)
-    btn_box.add_child(btn_rules)
+    main_menu_layer.add_child(btn_rules)
 
-    # 7. Subdued Golden Footer
+    # 3. Footer discreto sul nastro dorato in fondo all'immagine
     var footer = Label.new()
+    footer.position = Vector2(60, 1170)
+    footer.size = Vector2(600, 24)
     footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    footer.text = "✦  BURRACO KINGDOM  •  EDIZIONE UFFICIALE F.I.BUR  •  v1.0.0 MOBILE  ✦"
+    footer.text = "EDIZIONE UFFICIALE F.I.BUR  •  v1.0.0 MOBILE"
     footer.add_theme_font_size_override("font_size", 11)
-    footer.add_theme_color_override("font_color", Color(1.0, 0.92, 0.72, 0.80))
-    main_vbox.add_child(footer)
+    footer.add_theme_color_override("font_color", Color(1.0, 0.92, 0.72, 0.85))
+    main_menu_layer.add_child(footer)
 
-func _create_huge_card_button(icon_emoji: String, title: String, subtitle: String, tag: String, bg_col: Color, border_col: Color, is_primary: bool = false) -> Button:
+# Bottone trasparente da incastonare su uno dei 4 riquadri già intagliati
+# nell'immagine di sfondo del menu: nessuno stylebox visibile, solo
+# titolo + sottotitolo, cosi' il legno e l'oro dipinti restano protagonisti.
+func _create_menu_slot_button(title: String, subtitle: String, title_col: Color) -> Button:
     var btn = Button.new()
-    # MASSIVE SIZE: 570px wide x 190px tall (more than 2.5x larger than before!)
-    btn.custom_minimum_size = Vector2(640, 136)
     btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+    btn.flat = true
+    var sb_empty = StyleBoxEmpty.new()
+    btn.add_theme_stylebox_override("normal", sb_empty)
+    btn.add_theme_stylebox_override("hover", sb_empty)
+    btn.add_theme_stylebox_override("pressed", sb_empty)
+    btn.add_theme_stylebox_override("focus", sb_empty)
 
-    # 3D Clash Royale style bevel with heavy shadow and thick shiny border
-    var sb = StyleBoxFlat.new()
-    sb.bg_color = bg_col
-    sb.border_color = border_col
-    sb.border_width_left = 5 if is_primary else 4
-    sb.border_width_top = 5 if is_primary else 4
-    sb.border_width_right = 5 if is_primary else 4
-    sb.border_width_bottom = 8 if is_primary else 6
-    sb.corner_radius_top_left = 22
-    sb.corner_radius_top_right = 22
-    sb.corner_radius_bottom_right = 22
-    sb.corner_radius_bottom_left = 22
-    sb.shadow_color = Color(0, 0, 0, 0.75)
-    sb.shadow_size = 10
-    sb.shadow_offset = Vector2(0, 7)
-    btn.add_theme_stylebox_override("normal", sb)
-
-    var sb_hover = sb.duplicate()
-    sb_hover.bg_color = bg_col.lightened(0.14)
-    sb_hover.border_color = border_col.lightened(0.2)
-    sb_hover.shadow_offset = Vector2(0, 9)
-    btn.add_theme_stylebox_override("hover", sb_hover)
-
-    var sb_pressed = sb.duplicate()
-    sb_pressed.bg_color = bg_col.darkened(0.12)
-    sb_pressed.shadow_offset = Vector2(0, 2)
-    btn.add_theme_stylebox_override("pressed", sb_pressed)
-
-    # Content Container inside the button
-    var hbox = HBoxContainer.new()
-    hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-    hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    hbox.add_theme_constant_override("separation", 18)
-    hbox.offset_left = 24
-    hbox.offset_right = -24
-    hbox.offset_top = 16
-    hbox.offset_bottom = -16
-    btn.add_child(hbox)
-
-    # Left: Giant Icon Badge
-    var icon_lbl = Label.new()
-    icon_lbl.text = icon_emoji
-    icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-    icon_lbl.add_theme_font_size_override("font_size", 48)
-    hbox.add_child(icon_lbl)
-
-    # Right: Text Stack
     var vbox = VBoxContainer.new()
-    vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
     vbox.alignment = BoxContainer.ALIGNMENT_CENTER
     vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    vbox.add_theme_constant_override("separation", 4)
-    hbox.add_child(vbox)
+    vbox.add_theme_constant_override("separation", 2)
+    btn.add_child(vbox)
 
-    # Badge tag (e.g. "⭐ GIOCA SUBITO ⭐")
-    var l_tag = Label.new()
-    l_tag.text = tag
-    l_tag.add_theme_font_size_override("font_size", 11)
-    l_tag.add_theme_color_override("font_color", border_col.lightened(0.25))
-    vbox.add_child(l_tag)
-
-    # Big Title
     var l_title = Label.new()
     l_title.text = title
-    l_title.add_theme_font_size_override("font_size", 30 if is_primary else 28)
-    l_title.add_theme_color_override("font_color", Color(1.0, 0.98, 0.90) if is_primary else Color(1.0, 1.0, 1.0))
+    l_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    l_title.add_theme_font_size_override("font_size", 26)
+    l_title.add_theme_color_override("font_color", title_col)
+    l_title.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
+    l_title.add_theme_constant_override("shadow_offset_x", 0)
+    l_title.add_theme_constant_override("shadow_offset_y", 2)
     vbox.add_child(l_title)
 
-    # Subtitle
     var l_sub = Label.new()
     l_sub.text = subtitle
+    l_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     l_sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-    l_sub.add_theme_font_size_override("font_size", 13)
-    l_sub.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.95))
+    l_sub.add_theme_font_size_override("font_size", 12)
+    l_sub.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.88))
+    l_sub.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
+    l_sub.add_theme_constant_override("shadow_offset_x", 0)
+    l_sub.add_theme_constant_override("shadow_offset_y", 1)
     vbox.add_child(l_sub)
 
     return btn
