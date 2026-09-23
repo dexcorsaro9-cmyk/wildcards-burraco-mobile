@@ -35,7 +35,7 @@ var opponent_melds: Array[BurracoRules.BurracoMeld] = []
 var selected_cards: Array[BurracoCardData] = []
 
 # Riferimenti UI (iniettati o cercati)
-@onready var hand_container: HBoxContainer = $"../UI/TableLayer/HandContainer"
+@onready var hand_container: VBoxContainer = $"../UI/TableLayer/HandContainer"
 @onready var melds_container: HBoxContainer = $"../UI/TableLayer/PlayerMelds"
 @onready var opp_melds_container: HBoxContainer = $"../UI/TableLayer/OpponentMelds"
 @onready var status_label: Label = $"../UI/TableLayer/StatusLabel"
@@ -462,11 +462,10 @@ func _animate_meld_attach(cards_to_attach: Array[BurracoCardData], target_meld: 
     var flying_data: Array[Dictionary] = []
     for c in cards_to_attach:
         var found_cv: CardView = null
-        if hand_container:
-            for child in hand_container.get_children():
-                if child is CardView and child.card_data == c:
-                    found_cv = child
-                    break
+        for child in _hand_card_views():
+            if child.card_data == c:
+                found_cv = child
+                break
         if found_cv:
             flying_data.append({
                 "card": c,
@@ -570,11 +569,10 @@ func _animate_meld_flight(cards_to_meld: Array[BurracoCardData], res: Dictionary
     var flying_data: Array[Dictionary] = []
     for c in cards_to_meld:
         var found_cv: CardView = null
-        if hand_container:
-            for child in hand_container.get_children():
-                if child is CardView and child.card_data == c:
-                    found_cv = child
-                    break
+        for child in _hand_card_views():
+            if child.card_data == c:
+                found_cv = child
+                break
         if found_cv:
             flying_data.append({
                 "card": c,
@@ -991,34 +989,59 @@ func refresh_all_ui() -> void:
     _rebuild_hand_views()
     _rebuild_melds_views()
 
+func _hand_card_views() -> Array:
+    var out: Array = []
+    if hand_container == null:
+        return out
+    for row in hand_container.get_children():
+        for c in row.get_children():
+            if c is CardView:
+                out.append(c)
+    return out
+
 func _rebuild_hand_views() -> void:
     if hand_container == null: return
-    for child in hand_container.get_children():
-        child.queue_free()
+    for row in hand_container.get_children():
+        row.queue_free()
 
     var count = player_hand.size()
     var card_w = CardView.CARD_WIDTH
     var avail_w = hand_container.size.x
     if avail_w <= 0.0:
         avail_w = 700.0
-    var sep = -20
-    if count > 1:
-        var needed_sep = (avail_w - count * card_w) / float(count - 1)
-        sep = int(min(-20.0, floor(needed_sep)))
-        sep = int(max(sep, -card_w * 0.78))
-    hand_container.add_theme_constant_override("separation", sep)
 
-    for card in player_hand:
-        var cv = CardView.new()
-        hand_container.add_child(cv)
-        cv.setup(card)
-        cv.set_selected(selected_cards.has(card))
-        cv.card_clicked.connect(func(c_view):
-            toggle_selection(c_view.card_data)
-        )
-        cv.card_hovered.connect(func(c_view, is_hov):
-            _on_card_hovered(c_view, is_hov)
-        )
+    # Due file invece di una sola: con 11+ carte una fila unica le
+    # costringe a sovrapporsi quasi per intero per stare nello schermo.
+    # Su due file ogni fila ha meno carte, quindi meno (o nessuna)
+    # sovrapposizione e le carte restano leggibili.
+    var row1_count = int(ceil(count / 2.0))
+    var rows: Array = [player_hand.slice(0, row1_count), player_hand.slice(row1_count, count)]
+
+    for row_cards in rows:
+        if row_cards.is_empty():
+            continue
+        var row = HBoxContainer.new()
+        row.alignment = BoxContainer.ALIGNMENT_CENTER
+        var row_count = row_cards.size()
+        var sep = -20
+        if row_count > 1:
+            var needed_sep = (avail_w - row_count * card_w) / float(row_count - 1)
+            sep = int(min(-20.0, floor(needed_sep)))
+            sep = int(max(sep, -card_w * 0.78))
+        row.add_theme_constant_override("separation", sep)
+        hand_container.add_child(row)
+
+        for card in row_cards:
+            var cv = CardView.new()
+            row.add_child(cv)
+            cv.setup(card)
+            cv.set_selected(selected_cards.has(card))
+            cv.card_clicked.connect(func(c_view):
+                toggle_selection(c_view.card_data)
+            )
+            cv.card_hovered.connect(func(c_view, is_hov):
+                _on_card_hovered(c_view, is_hov)
+            )
 
 func _rebuild_melds_views() -> void:
     if melds_container:
@@ -1187,8 +1210,8 @@ func toggle_selection(card: BurracoCardData) -> void:
     else:
         selected_cards.append(card)
 
-    for cv in hand_container.get_children():
-        if cv is CardView and cv.card_data:
+    for cv in _hand_card_views():
+        if cv.card_data:
             cv.set_selected(selected_cards.has(cv.card_data))
 
     _update_action_buttons()
