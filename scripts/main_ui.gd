@@ -179,16 +179,18 @@ func _apply_taverna_profile_style(card: Control, avatar: TextureRect, turn_ring:
         card.add_child(plate)
 
 func _apply_table_background(rect: TextureRect) -> void:
-    var gradient = Gradient.new()
-    gradient.colors = PackedColorArray([Color(0.11, 0.16, 0.32, 1.0), Color(0.02, 0.03, 0.07, 1.0)])
-    gradient.offsets = PackedFloat32Array([0.0, 1.0])
-    var tex = GradientTexture2D.new()
-    tex.gradient = gradient
-    tex.fill = GradientTexture2D.FILL_RADIAL
-    tex.fill_from = Vector2(0.5, 0.38)
-    tex.fill_to = Vector2(0.5, 1.05)
-    tex.width = 512
-    tex.height = 512
+    # Gradiente disegnato pixel per pixel (niente GradientTexture2D: il fill
+    # radiale via risorsa Gradient non produceva i colori attesi a runtime).
+    var h = 256
+    var img = Image.create_empty(2, h, false, Image.FORMAT_RGB8)
+    var top_col = Color(0.14, 0.20, 0.40)
+    var bottom_col = Color(0.02, 0.03, 0.07)
+    for y in range(h):
+        var t = float(y) / float(h - 1)
+        var col = top_col.lerp(bottom_col, t)
+        img.set_pixel(0, y, col)
+        img.set_pixel(1, y, col)
+    var tex = ImageTexture.create_from_image(img)
     rect.texture = tex
     rect.stretch_mode = TextureRect.STRETCH_SCALE
     rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
